@@ -13,7 +13,7 @@ import java.util.Comparator;
  * @author	James C. Coté
  * @version v1.1 - Feb 18, 2014
  */
-public class Tag implements Comparator< Tag >
+public class Tag extends SortableNoteTag
 {
 	// Private Variables
 	private ArrayList< Note > m_AdjacentNotes;
@@ -110,9 +110,10 @@ public class Tag implements Comparator< Tag >
 	 * the right and a positive number if the left is lower than the right.
 	 */
 	@Override
-    public int compare( Tag tLHS, Tag tRHS )
+    public int compareTo( SortableNoteTag ntRHS )
     {
-	    return tLHS.m_sValue.compareToIgnoreCase( tRHS.m_sValue );
+	    Tag tRHS = (Tag) ntRHS;
+		return this.m_sValue.compareToIgnoreCase( tRHS.m_sValue );
     }
 
 }

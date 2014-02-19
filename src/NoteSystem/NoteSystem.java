@@ -131,6 +131,40 @@ public class NoteSystem
 	}
 	
 	/**
+	 * Function to sort a list of Notes and Tags.
+	 * 
+	 * @param m_SubList	The list of SortableNoteTag objects to sort.
+	 * @return			The sorted list.
+	 */
+	public ArrayList< SortableNoteTag > quickSort( ArrayList< SortableNoteTag > m_SubList )
+	{
+		ArrayList< SortableNoteTag > m_ReturnList	= new ArrayList< SortableNoteTag >( );
+		ArrayList< SortableNoteTag > m_Greater 		= new ArrayList< SortableNoteTag >( );
+		ArrayList< SortableNoteTag > m_Lesser		= new ArrayList< SortableNoteTag >( );
+		SortableNoteTag m_Pivot						= null;
+		int iSize 									= m_SubList.size( );
+		
+		if( iSize <= 1 )
+			return m_SubList;
+		
+		m_Pivot = m_SubList.remove( iSize >> 1 );
+		
+		for( SortableNoteTag ntIndex : m_SubList )
+		{
+			if( m_Pivot.compareTo( ntIndex ) > 0 )
+				m_Greater.add( ntIndex );
+			else
+				m_Lesser.add( ntIndex );
+		}
+		
+		m_ReturnList.addAll( quickSort( m_Lesser ) );
+		m_ReturnList.add( m_Pivot );
+		m_ReturnList.addAll( quickSort( m_Greater ) );
+		
+		return m_ReturnList;
+	}
+	
+	/**
 	 * Removes the first Note with the specified Title
 	 * @param sTitles	An array of multiple titles passed into the function.
 	 * 					Allows for the removal of multiple Notes at once.

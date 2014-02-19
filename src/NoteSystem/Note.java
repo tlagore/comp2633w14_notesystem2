@@ -14,7 +14,7 @@ import java.util.Locale;
  * @author	James C. Coté
  * @version v1.1 - Feb 18, 2014
  */
-public class Note implements Comparator< Note >
+public class Note extends SortableNoteTag
 {
 	// Private Variables
 	private int m_iID;
@@ -128,6 +128,7 @@ public class Note implements Comparator< Note >
 	
 	/**
 	 * Comparative function for sorting an array list of notes.
+	 * Inherited from SortableNoteTag class.
 	 * 
 	 * @param nLHS	The first object to compare.
 	 * @param nRHS	Second object to compare.
@@ -136,8 +137,9 @@ public class Note implements Comparator< Note >
 	 * 				a later date than the right.
 	 */
 	@Override
-	public int compare( Note nLHS, Note nRHS )
-	{
-		return nLHS.m_cDate.compareTo( nRHS.m_cDate );
-	}
+    public int compareTo( SortableNoteTag ntRHS )
+    {
+		Note nRHS = (Note) ntRHS;
+	    return this.m_cDate.compareTo( nRHS.m_cDate );
+    }
 }
