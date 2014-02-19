@@ -5,15 +5,16 @@ package NoteSystem;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Locale;
 
 /**
  * Note Entity containing data pertaining to a Note.
  *
  * @author	James C. Coté
- * @version v1.0 - Feb 14, 2014
+ * @version v1.1 - Feb 18, 2014
  */
-public class Note 
+public class Note implements Comparator< Note >
 {
 	// Private Variables
 	private int m_iID;
@@ -97,8 +98,6 @@ public class Note
 		return bReturnValue;
 	}
 	
-	
-	
 	/**
 	 * Getters and Setters
 	 */
@@ -125,5 +124,20 @@ public class Note
 	public void removeTag( Tag tTagToRemove )	
 	{
 		m_Tags.remove( tTagToRemove );
+	}
+	
+	/**
+	 * Comparative function for sorting an array list of notes.
+	 * 
+	 * @param nLHS	The first object to compare.
+	 * @param nRHS	Second object to compare.
+	 * @return		0 if both notes have the same date, a negative number if the left
+	 * 				note has an earlier date than the right and positive if the left note has
+	 * 				a later date than the right.
+	 */
+	@Override
+	public int compare( Note nLHS, Note nRHS )
+	{
+		return nLHS.m_cDate.compareTo( nRHS.m_cDate );
 	}
 }

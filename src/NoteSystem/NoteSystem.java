@@ -11,8 +11,8 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
 /**
  * Main System for Managing Notes and Tags.
  *
- * @author	(Your Name Here)
- * @version v1.0 - Feb 14, 2014
+ * @author	James Coté
+ * @version v1.1 - Feb 18, 2014
  */
 public class NoteSystem 
 {
@@ -36,6 +36,12 @@ public class NoteSystem
 		loadList( );
 		m_iNextID = m_NotesList.size( ) + 1;
 	}
+	
+	/**
+	 * Getters for the Note and Tag lists.
+	 */
+	public ArrayList< Note > getNoteList( )		{ return m_NotesList; }
+	public ArrayList< Tag > getTagList( )		{ return m_TagsList; }
 	
 	/**
 	 * Loads a list from the XML file and populates the Tag List.
@@ -68,6 +74,25 @@ public class NoteSystem
 				else
 					m_TagsList.add( tIndex );
 			}
+	}
+		
+	/**
+	 * Re-evaluates list with fresh IDs in order to avoid ID collisions.
+	 */
+	private void consolidateIDs( )
+	{
+		m_iNextID = 0;
+		
+		for( Note nIndex : m_NotesList )
+		{
+			if( nIndex.getID( ) != m_iNextID )
+			{
+				m_NotesList.add( m_iNextID, new Note( m_iNextID, nIndex ) );
+				m_NotesList.remove( nIndex );
+			}
+			
+			m_iNextID++;
+		}
 	}
 	
 	/**
@@ -145,24 +170,5 @@ public class NoteSystem
             outFile.close();
         }
         catch(Exception ex) {}
-	}
-	
-	/**
-	 * Re-evaluates list with fresh IDs in order to avoid ID collisions.
-	 */
-	private void consolidateIDs( )
-	{
-		m_iNextID = 0;
-		
-		for( Note nIndex : m_NotesList )
-		{
-			if( nIndex.getID( ) != m_iNextID )
-			{
-				m_NotesList.add( m_iNextID, new Note( m_iNextID, nIndex ) );
-				m_NotesList.remove( nIndex );
-			}
-			
-			m_iNextID++;
-		}
 	}
 }

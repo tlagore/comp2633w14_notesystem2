@@ -4,15 +4,16 @@
 package NoteSystem;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 /**
  * Tag Entity class:
  * 		Holds information about connected Notes and the string value of the tag.
  *
  * @author	James C. Coté
- * @version v1.0 - Feb 17, 2014
+ * @version v1.1 - Feb 18, 2014
  */
-public class Tag 
+public class Tag implements Comparator< Tag >
 {
 	// Private Variables
 	private ArrayList< Note > m_AdjacentNotes;
@@ -101,5 +102,17 @@ public class Tag
 		m_AdjacentNotes.remove( nNoteToRemove );
 		return m_AdjacentNotes.isEmpty( );
 	}
+
+	/**
+	 * Overridden Comparative object used for comparing 2 tags.
+	 * Compares the 2 tag string values.  Returns 0 if they're both
+	 * equal, a negative number if the left is lexicographically higher than
+	 * the right and a positive number if the left is lower than the right.
+	 */
+	@Override
+    public int compare( Tag tLHS, Tag tRHS )
+    {
+	    return tLHS.m_sValue.compareToIgnoreCase( tRHS.m_sValue );
+    }
 
 }
