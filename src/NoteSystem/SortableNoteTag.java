@@ -12,5 +12,6 @@ package NoteSystem;
  */
 public abstract class SortableNoteTag 
 {
-	public abstract int compareTo( SortableNoteTag ntRHS );
+	public abstract int compareTo( SortableNoteTag eRHS );
+	public abstract String toString( );
 }

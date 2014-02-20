@@ -128,7 +128,7 @@ public class Note extends SortableNoteTag
 	
 	/**
 	 * Comparative function for sorting an array list of notes.
-	 * Inherited from SortableNoteTag class.
+	 * overriding abstract method in SortableNoteTag class.
 	 * 
 	 * @param nLHS	The first object to compare.
 	 * @param nRHS	Second object to compare.
@@ -137,9 +137,18 @@ public class Note extends SortableNoteTag
 	 * 				a later date than the right.
 	 */
 	@Override
-    public int compareTo( SortableNoteTag ntRHS )
+	public int compareTo( SortableNoteTag ntRHS )
     {
 		Note nRHS = (Note) ntRHS;
 	    return this.m_cDate.compareTo( nRHS.m_cDate );
     }
+	
+	/**
+	 * Returns the the string output of a Note class.
+	 */
+	@Override
+	public String toString( )
+	{
+		return String.format( "%-15s%-15s", m_sTitle, getDate( ) );
+	}
 }

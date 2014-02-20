@@ -73,7 +73,8 @@ public class Tag extends SortableNoteTag
 	/**
 	 * Getters and Setters
 	 */
-	public String getTag( ) 				{ return m_sValue; }
+	public ArrayList< Note > getAdjacentNotes( )	{ return m_AdjacentNotes; }
+	public String getTag( ) 						{ return m_sValue; }
 	/*Shouldn't be Needed* 
 	 * public void setTag( String sNewValue ) 	{ m_sValue = sNewValue; }
 	 */
@@ -115,5 +116,14 @@ public class Tag extends SortableNoteTag
 	    Tag tRHS = (Tag) ntRHS;
 		return this.m_sValue.compareToIgnoreCase( tRHS.m_sValue );
     }
+	
+	/**
+	 * Overridden toString function for outputting tag objects.
+	 */
+	@Override
+	public String toString( )
+	{
+		return m_sValue;
+	}
 
 }

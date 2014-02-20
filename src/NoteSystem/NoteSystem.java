@@ -136,20 +136,21 @@ public class NoteSystem
 	 * @param m_SubList	The list of SortableNoteTag objects to sort.
 	 * @return			The sorted list.
 	 */
-	public ArrayList< SortableNoteTag > quickSort( ArrayList< SortableNoteTag > m_SubList )
+	public < NT extends SortableNoteTag > ArrayList< NT > quickSort( ArrayList< NT > m_SubList )
 	{
-		ArrayList< SortableNoteTag > m_ReturnList	= new ArrayList< SortableNoteTag >( );
-		ArrayList< SortableNoteTag > m_Greater 		= new ArrayList< SortableNoteTag >( );
-		ArrayList< SortableNoteTag > m_Lesser		= new ArrayList< SortableNoteTag >( );
-		SortableNoteTag m_Pivot						= null;
-		int iSize 									= m_SubList.size( );
+		
+		ArrayList< NT > m_ReturnList	= new ArrayList< NT >( );
+		ArrayList< NT > m_Greater 		= new ArrayList< NT >( );
+		ArrayList< NT > m_Lesser		= new ArrayList< NT >( );
+		NT m_Pivot						= null;
+		int iSize 						= m_SubList.size( );
 		
 		if( iSize <= 1 )
 			return m_SubList;
 		
 		m_Pivot = m_SubList.remove( iSize >> 1 );
 		
-		for( SortableNoteTag ntIndex : m_SubList )
+		for( NT ntIndex : m_SubList )
 		{
 			if( m_Pivot.compareTo( ntIndex ) > 0 )
 				m_Greater.add( ntIndex );
