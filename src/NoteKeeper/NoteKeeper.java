@@ -38,7 +38,7 @@ public class NoteKeeper
 		noteSystem = new NoteSystem();
 		noteList = noteSystem.getNoteList();
 		tagList = noteSystem.getTagList();
-		mWindow = new NoteSystemMainWindow(this);
+		mWindow = new NoteSystemMainWindow(this, noteList.get(0));
 	}
 	
 	public void run()
