@@ -128,7 +128,7 @@ public class NoteSystem
 			if( m_NotesList.get( i ).getTitle( ).equals( sReturnString ) )
 			{
 				iTitleCount++;
-				sReturnString += " - " + String.valueOf( iTitleCount );
+				sReturnString = sTitle + " - " + String.valueOf( iTitleCount );
 				i = 0;
 			}
 		}
