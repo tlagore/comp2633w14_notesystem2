@@ -109,4 +109,9 @@ public class NoteKeeper
 	{
 		return noteList.size();
 	}
+	
+	public void reloadTags()
+	{
+		mWindow.loadTags(tagList);
+	}
 }
