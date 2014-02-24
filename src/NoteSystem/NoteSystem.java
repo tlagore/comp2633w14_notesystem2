@@ -121,14 +121,17 @@ public class NoteSystem
 	public String getUniqueTitle( String sTitle )
 	{
 		int iTitleCount = 0;
-		String sReturnString = sTitle;
+		String sReturnString = sTitle;		
 		
-		for( Note nIndex : m_NotesList )
-			if( nIndex.getTitle( ).equals( sTitle ) )
+		for( int i = 0; i < m_NotesList.size( ); ++i )
+		{
+			if( m_NotesList.get( i ).getTitle( ).equals( sReturnString ) )
+			{
 				iTitleCount++;
-		
-		if( iTitleCount != 0 )
-			sReturnString += String.valueOf( iTitleCount );
+				sReturnString += " - " + String.valueOf( iTitleCount );
+				i = 0;
+			}
+		}
 		
 		return sReturnString;
 	}
