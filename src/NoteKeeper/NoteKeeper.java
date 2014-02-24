@@ -96,12 +96,12 @@ public class NoteKeeper
 	}
 
 	
-	public void saveNote(String oldTitle, Note n)
+	public void saveNote(String title, String desc, Note n)
 	{
 		// TODO Auto-generated method stub
-		noteSystem.removeNotes(oldTitle);
-		noteList.add(n);
-		noteList = noteSystem.quickSort(noteList);
+		n.setDate(Calendar.getInstance());
+		n.setTitle(noteSystem.getUniqueTitle(title));
+		n.setDesc(desc);
 		
 	}
 	
