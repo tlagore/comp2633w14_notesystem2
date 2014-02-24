@@ -70,7 +70,7 @@ public class NoteKeeper
 		}
 		
 		return noteSystem.quickSort(toReturn);
-	}//
+	}
 	
 	public ArrayList<Tag> tagsByTag(String tag)
 	{
