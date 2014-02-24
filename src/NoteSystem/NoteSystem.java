@@ -55,13 +55,13 @@ public class NoteSystem
             
             m_NotesList = ( ArrayList< Note > ) xstream.fromXML( input.nextLine() );
             
-            if( m_NotesList.isEmpty( ) )
-            	loadNewNote( );
-            
             populateTagsList( );   
 
         }
         catch(Exception ex) {} 
+        
+        if( m_NotesList.isEmpty( ) )
+        	loadNewNote( );
 	}
 	
 	/**
