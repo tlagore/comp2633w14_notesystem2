@@ -83,6 +83,10 @@ public class NoteSystemMainWindow extends JFrame {
 			{
 				currentNote.addTag(new Tag(tagTextField.getText(), currentNote));
 				loadCurrentTags();
+			} else if (e.getSource().equals(btnRemoveTag))
+			{
+				
+			}
 			}
 		}
 	}
