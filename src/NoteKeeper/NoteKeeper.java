@@ -51,8 +51,7 @@ public class NoteKeeper
 	
 	public Note loadNote(int element)
 	{
-		/* TODO complete function - ensure error checking for empty list (make new note if list is empty) */
-		return null;
+		return noteList.get(element);
 	}
 	
 	//Edit for pushability
@@ -87,7 +86,7 @@ public class NoteKeeper
 
 	public void removeNote(Note note) 
 	{
-		// TODO Auto-generated method stub
+		noteSystem.removeNotes(note.getTitle());
 		
 	}
 
@@ -97,9 +96,12 @@ public class NoteKeeper
 	}
 
 	
-	public void saveNote(String noteTitle, String noteDesc)
+	public void saveNote(String oldTitle, Note n)
 	{
 		// TODO Auto-generated method stub
+		noteSystem.removeNotes(oldTitle);
+		noteList.add(n);
+		noteList = noteSystem.quickSort(noteList);
 		
 	}
 	
