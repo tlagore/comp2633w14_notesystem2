@@ -2,6 +2,7 @@ package GUI;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -9,43 +10,35 @@ import javax.swing.border.EmptyBorder;
 import NoteKeeper.NoteKeeper;
 import NoteSystem.Note;
 import NoteSystem.Tag;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import javax.swing.border.TitledBorder;
-import javax.swing.border.MatteBorder;
-import javax.swing.border.SoftBevelBorder;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.EtchedBorder;
+
+import java.awt.event.*;
+
+import javax.swing.border.*;
 
 public class NoteSystemMainWindow extends JFrame {
 
 	private JPanel	contentPane;
 	private DefaultListModel<Note> noteModelList;
-	private DefaultListModel<Tag> tagModelList;
-	private JList noteJList, tagJList;
+	private DefaultListModel<Tag> tagModelList, currentTagModelList;
 	private NoteKeeper noteKeeper;
 	private Note currentNote;
-	private JScrollPane noteScrollPane;
-	private JScrollPane tagScrollPane;
 	private JTextField tagTextField;
-	private JButton btnNewNote;
-	private JButton btnNewButton;
+	private JButton btnRemove, btnNewNote, btnEdit, btnSave, btnAddTag, btnClose;
 	private JPanel noteViewPanel;
 	private JPanel titelBorderPanel;
 	private JTextPane noteDateTextPane;
 	private JTextPane noteTitleTextPane;
 	private JPanel descriptionBorderPanel;
 	private JTextPane noteDescriptionTextPane;
-	private JButton btnEdit;
-	private JButton btnSave;
-	private JTextField noteTagTextField;
-	private JPanel tagPanel;
-	private JButton btnAddTag;
-	private JButton btnClose;
 	private JPanel searchByTagBorder;
 	private JLabel lblSmartwaterNotes;
+	private JList noteJList, tagJList, currentTagJList;
+	private JPanel tagPanel;
+	private JTextField noteTagTextField;
+	private JScrollPane noteScrollPane;
+	private JScrollPane tagScrollPane;
+	private JScrollPane noteTagScrollPane;
+	private JButton btnRemoveTag;
 
 	
 	//-------------------------------INNER CLASS ---------------------------//
@@ -60,30 +53,38 @@ public class NoteSystemMainWindow extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-
+			
 			if (e.getSource().equals(btnEdit)) 
 			{
-
-				btnEdit.setEnabled(false);
-				btnSave.setEnabled(true);
-				noteTitleTextPane.setEditable(true);
-				noteDescriptionTextPane.setEditable(true);
-
-			} else if (e.getSource().equals(btnRemoveSelected)) 
+					toggleEdit();
+			} else if (e.getSource().equals(btnRemove)) 
 			{
-				List<Book> selected = bookJList.getSelectedValuesList();
+				List<Note> selected = noteJList.getSelectedValuesList();
 
-				for (Book book : selected) 
+				for (Note note : selected) 
 				{
-					bookKeeperCntr.removeBook(book);
-					
-					bookModelList.removeElement(book);
+					noteKeeper.removeNote(note);
+					noteModelList.removeElement(note);
 				}
 				
+				if (noteKeeper.listSize() > 0)
+					currentNote = noteKeeper.loadNote(0);
+				
+			} else if (e.getSource().equals(btnSave))
+			{
+				saveNote();
+				toggleEdit();
+				
+			} else if (e.getSource().equals(btnNewNote))
+			{
+				currentNote = noteKeeper.loadNewNote();
+				noteKeeper.reloadNotes();
+			} else if (e.getSource().equals(btnAddTag))
+			{
+				currentNote.addTag(new Tag(tagTextField.getText(), currentNote));
+				loadCurrentTags();
 			}
-
 		}
-
 	}
 	//////////////////////////////////////////////////////////////////////
 	
@@ -98,72 +99,49 @@ public class NoteSystemMainWindow extends JFrame {
 		currentNote = note;
 		
 		setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		setBounds( 100, 100, 833, 519 );
+		setBounds( 100, 100, 833, 532 );
 		contentPane = new JPanel( );
+		contentPane.setLocation(-36, -67);
 		contentPane.setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
 		setContentPane( contentPane );
 		contentPane.setLayout(null);
 		
-		tagScrollPane = new JScrollPane();
-		tagScrollPane.setBounds(702, 53, 105, 386);
-		contentPane.add(tagScrollPane);
-		
-		noteScrollPane = new JScrollPane();
-		noteScrollPane.setBounds(510, 53, 173, 386);
-		contentPane.add(noteScrollPane);
-		
-		/*
-		noteModelList = new DefaultListModel<Note>();
-		noteJList = new JList();
-		noteJList.setModel(noteModelList);
-		noteScrollPane.setViewportView(noteJList);
-		
-		tagModelList = new DefaultListModel<Tag>();
-		tagJList = new JList();
-		tagJList.setModel(tagModelList);
-		tagScrollPane.setViewportView(noteJList);
-		*/
-		
 		btnNewNote = new JButton("New Note");
+		btnNewNote.addActionListener(handler);
 		btnNewNote.setBounds(510, 19, 173, 23);
 		contentPane.add(btnNewNote);
 		
-		btnNewButton = new JButton("Remove");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
-		btnNewButton.setBounds(510, 450, 173, 23);
-		contentPane.add(btnNewButton);
+		btnRemove = new JButton("Remove");
+		btnRemove.addActionListener(handler);
+		btnRemove.setBounds(510, 450, 173, 23);
+		contentPane.add(btnRemove);
 		
 		searchByTagBorder = new JPanel();
 		searchByTagBorder.setBorder(new TitledBorder(null, "Search by Tag", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		searchByTagBorder.setBounds(702, 0, 105, 43);
+		searchByTagBorder.setBounds(699, 0, 105, 51);
 		contentPane.add(searchByTagBorder);
 		searchByTagBorder.setLayout(null);
 		
 		tagTextField = new JTextField();
-		tagTextField.setBounds(6, 16, 89, 20);
+		tagTextField.setBounds(10, 16, 89, 24);
 		tagTextField.setBackground(SystemColor.controlHighlight);
 		searchByTagBorder.add(tagTextField);
-		tagTextField.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent arg0) {
-			}
-		});
-		tagTextField.setColumns(10);
-		
+		tagTextField.setColumns(1);
+
 		btnEdit = new JButton("Edit");
+		btnEdit.addActionListener(handler);
 		btnEdit.setBounds(10, 20, 89, 23);
 		contentPane.add(btnEdit);
 		
 		btnSave = new JButton("Save");
+		btnSave.addActionListener(handler);
 		btnSave.setEnabled(false);
 		btnSave.setBounds(10, 450, 89, 23);
 		contentPane.add(btnSave);
 		
 		btnClose = new JButton("Save and Exit");
-		btnClose.setBounds(702, 450, 105, 23);
+		btnClose.addActionListener(handler);
+		btnClose.setBounds(699, 401, 105, 72);
 		contentPane.add(btnClose);
 		
 		lblSmartwaterNotes = new JLabel("SmartWater Notes");
@@ -185,7 +163,7 @@ public class NoteSystemMainWindow extends JFrame {
 		
 		noteTitleTextPane = new JTextPane();
 		noteTitleTextPane.setEditable(false);
-		noteTitleTextPane.setBounds(6, 16, 413, 28);
+		noteTitleTextPane.setBounds(10, 16, 409, 24);
 		titelBorderPanel.add(noteTitleTextPane);
 		noteTitleTextPane.setBackground(SystemColor.controlHighlight);
 		
@@ -203,31 +181,80 @@ public class NoteSystemMainWindow extends JFrame {
 		
 		descriptionBorderPanel = new JPanel();
 		descriptionBorderPanel.setBorder(new TitledBorder(null, "Note Description", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		descriptionBorderPanel.setBounds(22, 187, 437, 194);
+		descriptionBorderPanel.setBounds(24, 187, 429, 194);
 		noteViewPanel.add(descriptionBorderPanel);
 		descriptionBorderPanel.setLayout(null);
 		
 		noteDescriptionTextPane = new JTextPane();
 		noteDescriptionTextPane.setEditable(false);
-		noteDescriptionTextPane.setBounds(6, 16, 425, 167);
+		noteDescriptionTextPane.setBounds(10, 16, 301, 169);
 		descriptionBorderPanel.add(noteDescriptionTextPane);
 		noteDescriptionTextPane.setBackground(SystemColor.controlHighlight);
 		
+		noteTagScrollPane = new JScrollPane();
+		noteTagScrollPane.setBounds(321, 16, 96, 169);
+		descriptionBorderPanel.add(noteTagScrollPane);
+		
+		
 		tagPanel = new JPanel();
 		tagPanel.setBorder(new TitledBorder(null, "Add Tag", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		tagPanel.setBounds(24, 126, 138, 43);
+		tagPanel.setBounds(24, 126, 130, 51);
 		noteViewPanel.add(tagPanel);
 		tagPanel.setLayout(null);
 		
 		noteTagTextField = new JTextField();
-		noteTagTextField.setBounds(6, 16, 126, 20);
+		noteTagTextField.setBounds(10, 16, 115, 24);
 		tagPanel.add(noteTagTextField);
 		noteTagTextField.setBackground(SystemColor.controlHighlight);
-		noteTagTextField.setColumns(10);
+		noteTagTextField.setColumns(1);
+		noteTagTextField.setEditable(false);
 		
 		btnAddTag = new JButton("Add Tag");
-		btnAddTag.setBounds(364, 138, 89, 23);
+		btnAddTag.addActionListener(handler);
+		btnAddTag.setBounds(164, 145, 89, 23);
 		noteViewPanel.add(btnAddTag);
+		btnAddTag.setEnabled(false);
+		
+		btnRemoveTag = new JButton("Remove Tag");
+		btnRemoveTag.addActionListener(handler);
+		btnRemoveTag.setBounds(345, 145, 93, 23);
+		noteViewPanel.add(btnRemoveTag);
+		btnRemoveTag.setEnabled(false);
+		
+		noteModelList = new DefaultListModel<Note>();
+		
+		noteScrollPane = new JScrollPane();
+		noteScrollPane.setBounds(510, 53, 173, 386);
+		contentPane.add(noteScrollPane);
+		
+		tagModelList = new DefaultListModel<Tag>();
+		tagJList = new JList();
+		tagJList.setModel(tagModelList);
+		noteTagScrollPane.setViewportView(tagJList);
+		tagJList.setBackground(SystemColor.controlHighlight);
+		
+		noteModelList = new DefaultListModel<Note>();
+		noteJList = new JList();
+		noteJList.setModel(noteModelList);
+		noteScrollPane.setViewportView(noteJList);
+		noteJList.setBorder(new LineBorder(new Color(0, 0, 0)));
+		noteJList.setBackground(SystemColor.control);
+		
+		tagScrollPane = new JScrollPane();
+		tagScrollPane.setBounds(699, 53, 105, 332);
+		contentPane.add(tagScrollPane);
+		
+		currentTagModelList = new DefaultListModel<Tag>();
+		currentTagJList = new JList();
+		tagJList.setModel(currentTagModelList);
+		tagScrollPane.setViewportView(currentTagJList);
+		currentTagJList.setBackground(SystemColor.control);
+		currentTagJList.setBorder(new LineBorder(new Color(0, 0, 0)));
+		
+		noteTitleTextPane.setText(currentNote.getTitle());
+		noteDateTextPane.setText(currentNote.getDate());
+		noteDescriptionTextPane.setText(currentNote.getDesc());
+		loadCurrentTags();
 	}
 
 	/**
@@ -249,14 +276,56 @@ public class NoteSystemMainWindow extends JFrame {
 		});
 	}
 	
+
+	
+	private void toggleEdit()
+	{
+		boolean editable = btnEdit.isEnabled();
+		
+		btnEdit.setEnabled					(editable ? false : true);
+		btnSave.setEnabled					(editable ? true : false);
+		btnAddTag.setEnabled				(editable ? true : false);
+		btnRemoveTag.setEnabled				(editable ? true : false);
+		noteTitleTextPane.setEditable		(editable ? true : false);
+		noteDescriptionTextPane.setEditable	(editable ? true : false);
+		noteTagTextField.setEditable		(editable ? true : false);
+		
+	}
+	
+
+	private void saveNote() 
+	{
+		String noteTitle = 	noteTitleTextPane.getText();
+		String noteDesc = noteDescriptionTextPane.getText(); 
+		noteKeeper.saveNote(noteTitle, noteDesc);
+	}
+	
+	private void listChanged()
+	{
+		
+	}
+	
+	private void loadCurrentTags()
+	{
+		ArrayList<Tag> currentTags = currentNote.getTags();
+		
+		currentTagModelList.removeAllElements();
+		for (Tag t : currentTags)
+			currentTagModelList.addElement(t);
+	}
+	
 	public void loadNotes(ArrayList<Note> notes)
 	{
+		noteModelList.removeAllElements();
+		
 		for (Note n : notes)
 			noteModelList.addElement(n);
 	}
 	
 	public void loadTags(ArrayList<Tag> tags)
 	{
+		tagModelList.removeAllElements();
+		
 		for (Tag t : tags)
 			tagModelList.addElement(t);
 	}

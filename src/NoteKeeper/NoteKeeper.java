@@ -3,14 +3,10 @@
  */
 package NoteKeeper;
 
-import gui.MainWindow;
+import GUI.*;
 
 import java.util.*;
 
-import javax.swing.*;
-
-import systemCode.Book;
-import GUI.NoteSystemMainWindow;
 import NoteSystem.*;
 
 /**
@@ -45,7 +41,20 @@ public class NoteKeeper
 	{
 		mWindow.loadNotes(noteList);
 		mWindow.loadTags(tagList);
+		mWindow.run();
 	}
+	
+	public void reloadNotes()
+	{
+		mWindow.loadNotes(noteList);
+	}
+	
+	public Note loadNote(int element)
+	{
+		/* TODO complete function - ensure error checking for empty list (make new note if list is empty) */
+		return null;
+	}
+	
 	
 	public ArrayList<Note> notesByTag(String tag)
 	{
@@ -59,7 +68,7 @@ public class NoteKeeper
 			}
 		}
 		
-		return toReturn;
+		return noteSystem.quickSort(toReturn);
 	}
 	
 	public ArrayList<Tag> tagsByTag(String tag)
@@ -71,6 +80,29 @@ public class NoteKeeper
 				toReturn.add(t);
 		}
 		
-		return toReturn;
+		return noteSystem.quickSort(toReturn);
+	}
+
+	public void removeNote(Note note) 
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	public Note loadNewNote() 
+	{
+		return noteSystem.loadNewNote();
+	}
+
+	
+	public void saveNote(String noteTitle, String noteDesc)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public int listSize()
+	{
+		return noteList.size();
 	}
 }
