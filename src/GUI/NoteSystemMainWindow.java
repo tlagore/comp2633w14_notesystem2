@@ -63,12 +63,17 @@ public class NoteSystemMainWindow extends JFrame {
 
 				for (Note note : selected) 
 				{
-					noteKeeper.removeNote(note);
 					noteModelList.removeElement(note);
+					noteKeeper.removeNote(note);					
 				}
 				
 				if (noteKeeper.listSize() > 0)
 					currentNote = noteKeeper.loadNote(0);
+				else
+				{
+					noteKeeper.loadNewNote();
+					noteKeeper.reloadNotes();
+				}
 				
 			} else if (e.getSource().equals(btnSave))
 			{
@@ -234,8 +239,6 @@ public class NoteSystemMainWindow extends JFrame {
 		noteViewPanel.add(btnRemoveTag);
 		btnRemoveTag.setEnabled(false);
 		
-		noteModelList = new DefaultListModel<Note>();
-		
 		noteScrollPane = new JScrollPane();
 		noteScrollPane.setBounds(510, 53, 173, 386);
 		contentPane.add(noteScrollPane);
@@ -327,13 +330,19 @@ public class NoteSystemMainWindow extends JFrame {
 			currentTagModelList.addElement(t);
 	}
 	
-	public void loadNotes(ArrayList<Note> notes)
+	public void loadNotes(ArrayList<Note> noteList)
 	{
-		noteModelList = noteKeeper.reloadNotes();
+		noteModelList.removeAllElements();
+		
+		for (Note n : noteList)
+			noteModelList.addElement(n);
 	}
 	
-	public void loadTags(ArrayList<Tag> tags)
+	public void loadTags(ArrayList<Tag> tagList)
 	{
-		tagModelList = noteKeeper.reloadTags();
+		tagModelList.removeAllElements();
+		
+		for (Tag t : tagList)
+			tagModelList.addElement(t);
 	}
 }

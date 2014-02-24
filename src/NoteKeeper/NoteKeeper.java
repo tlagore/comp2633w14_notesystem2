@@ -25,8 +25,6 @@ import NoteSystem.*;
 
 public class NoteKeeper
 {
-	private DefaultListModel<Note> noteModelList;
-	private DefaultListModel<Tag> tagModelList;
 	private ArrayList<Note> noteList;
 	private ArrayList<Tag> tagList;
 	private NoteSystem noteSystem;
@@ -48,24 +46,14 @@ public class NoteKeeper
 		mWindow.run();
 	}
 	
-	public DefaultListModel<Note> reloadNotes()
+	public void reloadNotes()
 	{
-		noteModelList.removeAllElements();
-		
-		for (Note n : noteList)
-			noteModelList.addElement(n);
-		
-		return noteModelList;
+		mWindow.loadNotes(noteList);
 	}
 	
-	public DefaultListModel<Tag> reloadTags()
+	public void reloadTags()
 	{
-		tagModelList.removeAllElements();
-		
-		for (Tag t : tagList)
-			tagModelList.addElement(t);
-		
-		return tagModelList;
+		mWindow.loadTags(tagList);
 	}
 	
 	public Note loadNote(int element)
