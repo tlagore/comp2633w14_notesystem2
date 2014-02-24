@@ -55,9 +55,9 @@ public class NoteSystemMainWindow extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			
 			if (e.getSource().equals(btnEdit)) 
-			{
 					toggleEdit();
-			} else if (e.getSource().equals(btnRemove)) 
+			
+			else if (e.getSource().equals(btnRemove)) 
 			{
 				List<Note> selected = noteJList.getSelectedValuesList();
 
@@ -72,22 +72,30 @@ public class NoteSystemMainWindow extends JFrame {
 				
 			} else if (e.getSource().equals(btnSave))
 			{
+				
 				saveNote();
+				noteKeeper.reloadNotes();
 				toggleEdit();
 				
 			} else if (e.getSource().equals(btnNewNote))
 			{
+				
 				currentNote = noteKeeper.loadNewNote();
 				noteKeeper.reloadNotes();
+				
 			} else if (e.getSource().equals(btnAddTag))
 			{
-				currentNote.addTag(new Tag(tagTextField.getText(), currentNote));
-				
+				currentNote.addTag(new Tag(noteTagTextField.getText(), currentNote));
 				loadCurrentTags();
 				
 			} else if (e.getSource().equals(btnRemoveTag))
 			{
+				List<Tag> selectedTags = currentTagJList.getSelectedValuesList();
 				
+				for (Tag t : selectedTags)
+					currentNote.removeTag(t);
+				
+				loadCurrentTags();
 			}
 		}
 	}
@@ -301,20 +309,14 @@ public class NoteSystemMainWindow extends JFrame {
 	private void saveNote() 
 	{
 		String noteTitle = 	noteTitleTextPane.getText();
-		String noteDesc = noteDescriptionTextPane.getText(); 
-		noteKeeper.saveNote(noteTitle, noteDesc);
-	}
-	
-	private void listChanged()
-	{
-		
+		String noteDesc = noteDescriptionTextPane.getText();
+		currentNote.setTitle(noteTitle);
+		currentNote.setDesc(noteDesc);
 	}
 	
 	private void loadCurrentTags()
 	{
 		ArrayList<Tag> currentTags = currentNote.getTags();
-		
-		System.out.println(currentTags.size());
 		
 		currentTagModelList.removeAllElements();
 		for (Tag t : currentTags)

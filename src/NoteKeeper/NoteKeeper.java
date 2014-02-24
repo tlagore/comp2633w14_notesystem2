@@ -99,7 +99,7 @@ public class NoteKeeper
 	public void saveNote(String title, String desc, Note n)
 	{
 		// TODO Auto-generated method stub
-		n.setDate(Calendar.getInstance());
+		n.updateDate();
 		n.setTitle(noteSystem.getUniqueTitle(title));
 		n.setDesc(desc);
 		
