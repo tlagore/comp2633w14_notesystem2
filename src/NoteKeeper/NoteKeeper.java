@@ -17,7 +17,7 @@ import NoteSystem.*;
  *	Handles viewing, adding, removing, and updating of individual notes between the 
  *client view and the NoteSystem.
  *
- * @author	Tyrone Lagore
+ * @author	Chris Gonzalez
  * @version v1.0 - Feb 19, 2014
  */
 
@@ -54,9 +54,6 @@ public class NoteKeeper
 		return noteList.get(element);
 	}
 	
-	//Edit for pushability
-	
-	
 	public ArrayList<Note> notesByTag(String tag)
 	{
 		ArrayList<Note> toReturn = new ArrayList<Note>();
@@ -68,7 +65,6 @@ public class NoteKeeper
 					toReturn.add(n);
 			}
 		}
-		//
 		return noteSystem.quickSort(toReturn);
 	}
 	
