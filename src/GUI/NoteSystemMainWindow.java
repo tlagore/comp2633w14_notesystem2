@@ -248,7 +248,13 @@ public class NoteSystemMainWindow extends JFrame {
 		
 		noteModelList = new DefaultListModel<Note>();
 		noteJList = new JList();
-		noteJList.setModel(noteModelList);
+/*  	noteJList.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				currentNote = noteKeeper.loadNote(noteJList.getSelectedIndex());
+			}
+		});
+*/		noteJList.setModel(noteModelList);
 		noteScrollPane.setViewportView(noteJList);
 		noteJList.setBorder(new LineBorder(new Color(0, 0, 0)));
 		noteJList.setBackground(SystemColor.control);
@@ -308,10 +314,8 @@ public class NoteSystemMainWindow extends JFrame {
 
 	private void saveNote() 
 	{
-		String noteTitle = 	noteTitleTextPane.getText();
-		String noteDesc = noteDescriptionTextPane.getText();
-		currentNote.setTitle(noteTitle);
-		currentNote.setDesc(noteDesc);
+		noteKeeper.saveNote(noteTitleTextPane.getText(), 
+					noteDescriptionTextPane.getText(), currentNote);
 	}
 	
 	private void loadCurrentTags()
@@ -325,17 +329,11 @@ public class NoteSystemMainWindow extends JFrame {
 	
 	public void loadNotes(ArrayList<Note> notes)
 	{
-		noteModelList.removeAllElements();
-		
-		for (Note n : notes)
-			noteModelList.addElement(n);
+		noteModelList = noteKeeper.reloadNotes();
 	}
 	
 	public void loadTags(ArrayList<Tag> tags)
 	{
-		tagModelList.removeAllElements();
-		
-		for (Tag t : tags)
-			tagModelList.addElement(t);
+		tagModelList = noteKeeper.reloadTags();
 	}
 }

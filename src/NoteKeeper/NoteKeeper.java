@@ -7,6 +7,8 @@ import GUI.*;
 
 import java.util.*;
 
+import javax.swing.DefaultListModel;
+
 import NoteSystem.*;
 
 /**
@@ -23,6 +25,8 @@ import NoteSystem.*;
 
 public class NoteKeeper
 {
+	private DefaultListModel<Note> noteModelList;
+	private DefaultListModel<Tag> tagModelList;
 	private ArrayList<Note> noteList;
 	private ArrayList<Tag> tagList;
 	private NoteSystem noteSystem;
@@ -44,9 +48,24 @@ public class NoteKeeper
 		mWindow.run();
 	}
 	
-	public void reloadNotes()
+	public DefaultListModel<Note> reloadNotes()
 	{
-		mWindow.loadNotes(noteList);
+		noteModelList.removeAllElements();
+		
+		for (Note n : noteList)
+			noteModelList.addElement(n);
+		
+		return noteModelList;
+	}
+	
+	public DefaultListModel<Tag> reloadTags()
+	{
+		tagModelList.removeAllElements();
+		
+		for (Tag t : tagList)
+			tagModelList.addElement(t);
+		
+		return tagModelList;
 	}
 	
 	public Note loadNote(int element)
@@ -104,10 +123,5 @@ public class NoteKeeper
 	public int listSize()
 	{
 		return noteList.size();
-	}
-	
-	public void reloadTags()
-	{
-		mWindow.loadTags(tagList);
 	}
 }
