@@ -55,6 +55,9 @@ public class NoteSystem
             
             m_NotesList = ( ArrayList< Note > ) xstream.fromXML( input.nextLine() );
             
+            if( m_NotesList.isEmpty( ) )
+            	loadNewNote( );
+            
             populateTagsList( );   
 
         }
@@ -99,7 +102,7 @@ public class NoteSystem
 	 * Generates and returns a new note that is added to the NotesList.
 	 * @return	The new note that's generated with default parameters.
 	 */
-	public Note LoadNewNote( )
+	public Note loadNewNote( )
 	{
 		Note nNewNote = new Note( m_iNextID++, Calendar.getInstance( ), getUniqueTitle( s_DefaultTitle ), "" );
 		
