@@ -82,11 +82,12 @@ public class NoteSystemMainWindow extends JFrame {
 			} else if (e.getSource().equals(btnAddTag))
 			{
 				currentNote.addTag(new Tag(tagTextField.getText(), currentNote));
+				
 				loadCurrentTags();
+				
 			} else if (e.getSource().equals(btnRemoveTag))
 			{
 				
-			}
 			}
 		}
 	}
@@ -312,6 +313,8 @@ public class NoteSystemMainWindow extends JFrame {
 	private void loadCurrentTags()
 	{
 		ArrayList<Tag> currentTags = currentNote.getTags();
+		
+		System.out.println(currentTags.size());
 		
 		currentTagModelList.removeAllElements();
 		for (Tag t : currentTags)
