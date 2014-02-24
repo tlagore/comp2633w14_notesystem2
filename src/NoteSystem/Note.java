@@ -3,6 +3,7 @@
  */
 package NoteSystem;
 
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -110,7 +111,7 @@ public class Note extends SortableNoteTag
 																			m_cDate.get( Calendar.DAY_OF_MONTH ), 
 																			m_cDate.getDisplayName( Calendar.MONTH, Calendar.SHORT, Locale.CANADA ),
 																			m_cDate.get( Calendar.YEAR ) ); }
-	public void setDate( long lDateInMilliseconds ) { m_cDate.setTimeInMillis( lDateInMilliseconds ); }
+	public void updateDate( ) 						{ m_cDate.setTime( new Date( ) ); }
 	public ArrayList< Tag > getTags( ) 				{ return m_Tags; }
 	
 	/**
