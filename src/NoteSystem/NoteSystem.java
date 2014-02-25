@@ -231,10 +231,10 @@ public class NoteSystem
 	}
 	
 	/**
-	 * Removes the first Note with the specified Title
+	 * Removes the specified Note from the list.
 	 * @param nNoteToRemove	The Note to remove from the list.
 	 */
-	public void removeNotes( Note nNoteToRemove )
+	public void removeNote( Note nNoteToRemove )
 	{
 		for( Tag tIndex : getLinkedTags( nNoteToRemove ) )
 			if( tIndex.removeNote( nNoteToRemove ) )
