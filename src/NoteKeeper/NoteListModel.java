@@ -62,32 +62,38 @@ public class NoteListModel extends AbstractListModel<Note>
 		fireChange();
 	}
 
-/*
- 	public ArrayList<Note> notesByTag(String tag)
+	
+	public void sortByTag(String tag)
 	{
-		ArrayList<Note> toReturn = new ArrayList<Note>();
-		for (Tag t : tagList)
+		ArrayList<Note> temp = new ArrayList<Note>();
+		for (Tag t : noteSystem.getTagList())
 		{
 			if (t.getTag().startsWith(tag))
 			{	
 				for (Note n : t.getAdjacentNotes())
-					toReturn.add(n);
+					temp.add(n);
 			}
 		}
-		return noteSystem.quickSort(toReturn);
+		
+		noteList = temp;
+		fireContentsChanged(this, 0, noteList.size() - 1);
+	}
+	
+	public void clearTagField()
+	{
+		noteList = noteSystem.getNoteList();
+		fireChange();
+	}
+/*
+ 	public ArrayList<Note> notesByTag(String tag)
+	{
+		
 	}
 	
 	public ArrayList<Tag> tagsByTag(String tag)
 	{
 		ArrayList<Tag> toReturn = new ArrayList<Tag>();
-		for (Tag t : tagList)
-		{
-			if (t.getTag().startsWith(tag))
-				toReturn.add(t);
-		}
-		
-		return noteSystem.quickSort(toReturn);
-	}
+		f
  */
 	
 	

@@ -1,7 +1,9 @@
 package NoteKeeper;
 
 import java.util.*;
+
 import javax.swing.*;
+
 import NoteSystem.*;
 
 public class TagListModel extends AbstractListModel<Tag>
@@ -52,7 +54,24 @@ public class TagListModel extends AbstractListModel<Tag>
 	{
 		return tagList.size();
 	}
+
+	public void sortByTag(String tag) 
+	{
+		tagList = noteSystem.getTagList();
+		ArrayList<Tag> temp = new ArrayList<Tag>();
+		for (Tag t : tagList)
+		{
+			if (t.getTag().startsWith(tag))
+				temp.add(t);
+		}
+		
+		tagList = temp;
+		fireContentsChanged(this, 0, tagList.size() - 1);
+	}
 	
-
-
+	public void clearTagField()
+	{
+		tagList = noteSystem.getTagList();
+		fireChange();
+	}
 }
