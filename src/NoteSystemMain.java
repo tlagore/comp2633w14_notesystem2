@@ -1,4 +1,4 @@
-import NoteKeeper.NoteKeeper;
+import NoteSystem.*;
 
 /**
  * 
@@ -14,8 +14,7 @@ public class NoteSystemMain
 {	
 	public static void main( String[] args )
 	{
-		NoteKeeper noteKeeper = new NoteKeeper();
-		noteKeeper.run();
+		NoteSystem noteSystem = new NoteSystem();
 	}
 
 }

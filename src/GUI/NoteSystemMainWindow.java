@@ -7,9 +7,8 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import NoteKeeper.NoteKeeper;
-import NoteSystem.Note;
-import NoteSystem.Tag;
+import NoteKeeper.*;
+import NoteSystem.*;
 
 import java.awt.event.*;
 
@@ -18,9 +17,12 @@ import javax.swing.border.*;
 public class NoteSystemMainWindow extends JFrame {
 
 	private JPanel	contentPane;
-	private DefaultListModel<Note> noteModelList;
-	private DefaultListModel<Tag> tagModelList, currentTagModelList;
-	private NoteKeeper noteKeeper;
+	private TagListModel tagModelList;
+	private NoteListModel noteModelList;
+	
+//	private DefaultListModel<Note> noteModelList;
+//	private DefaultListModel<Tag> tagModelList;
+	private DefaultListModel<String> currentTagModelList;
 	private Note currentNote;
 	private JTextField tagTextField;
 	private JButton btnRemove, btnNewNote, btnEdit, btnSave, btnAddTag, btnClose;
@@ -39,6 +41,8 @@ public class NoteSystemMainWindow extends JFrame {
 	private JScrollPane tagScrollPane;
 	private JScrollPane noteTagScrollPane;
 	private JButton btnRemoveTag;
+	
+	private NoteSystem noteSystem;
 
 	
 	//-------------------------------INNER CLASS ---------------------------//
@@ -60,44 +64,31 @@ public class NoteSystemMainWindow extends JFrame {
 			else if (e.getSource().equals(btnRemove)) 
 			{
 				List<Note> selected = noteJList.getSelectedValuesList();
-
-				for (Note note : selected) 
-				{
-					noteModelList.removeElement(note);
-					noteKeeper.removeNote(note);					
-				}
 				
-				if (noteKeeper.listSize() > 0)
-					currentNote = noteKeeper.loadNote(0);
-				else
-				{
-					noteKeeper.loadNewNote();
-					noteKeeper.reloadNotes();
-				}
+				for (Note note : selected)
+					noteModelList.removeNote(note);		
 				
 			} else if (e.getSource().equals(btnSave))
 			{
 				
 				saveNote();
-				noteKeeper.reloadNotes();
 				toggleEdit();
 				
 			} else if (e.getSource().equals(btnNewNote))
 			{
+				currentNote = noteModelList.loadNewNote();
 				
-				currentNote = noteKeeper.loadNewNote();
-				noteKeeper.reloadNotes();
 				
 			} else if (e.getSource().equals(btnAddTag))
 			{
-				currentNote.addTag(new Tag(noteTagTextField.getText(), currentNote));
+				currentNote.addTag(noteTagTextField.getText());
 				loadCurrentTags();
 				
 			} else if (e.getSource().equals(btnRemoveTag))
 			{
-				List<Tag> selectedTags = currentTagJList.getSelectedValuesList();
+				List<String> selectedTags = currentTagJList.getSelectedValuesList();
 				
-				for (Tag t : selectedTags)
+				for (String t : selectedTags)
 					currentNote.removeTag(t);
 				
 				loadCurrentTags();
@@ -110,9 +101,9 @@ public class NoteSystemMainWindow extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public NoteSystemMainWindow(NoteKeeper noteKeeper, Note note)
+	public NoteSystemMainWindow(NoteSystem noteSystem, Note note)
 	{
-		this.noteKeeper = noteKeeper;
+		this.noteSystem = noteSystem;
 		MainWindowButtonHandlr handler = new MainWindowButtonHandlr(this);
 		currentNote = note;
 		
@@ -243,13 +234,13 @@ public class NoteSystemMainWindow extends JFrame {
 		noteScrollPane.setBounds(510, 53, 173, 386);
 		contentPane.add(noteScrollPane);
 		
-		tagModelList = new DefaultListModel<Tag>();
+		tagModelList = new TagListModel(noteSystem);
 		tagJList = new JList();
 		tagJList.setModel(tagModelList);
 		noteTagScrollPane.setViewportView(tagJList);
 		tagJList.setBackground(SystemColor.controlHighlight);
 		
-		noteModelList = new DefaultListModel<Note>();
+		noteModelList = new NoteListModel(noteSystem);
 		noteJList = new JList();
 /*  	noteJList.addMouseListener(new MouseAdapter() {
 			@Override
@@ -266,16 +257,14 @@ public class NoteSystemMainWindow extends JFrame {
 		tagScrollPane.setBounds(699, 53, 105, 332);
 		contentPane.add(tagScrollPane);
 		
-		currentTagModelList = new DefaultListModel<Tag>();
+		currentTagModelList = new DefaultListModel<String>();
 		currentTagJList = new JList();
 		tagJList.setModel(currentTagModelList);
 		tagScrollPane.setViewportView(currentTagJList);
 		currentTagJList.setBackground(SystemColor.control);
 		currentTagJList.setBorder(new LineBorder(new Color(0, 0, 0)));
 		
-		noteTitleTextPane.setText(currentNote.getTitle());
-		noteDateTextPane.setText(currentNote.getDate());
-		noteDescriptionTextPane.setText(currentNote.getDesc());
+		updateFields();
 		loadCurrentTags();
 	}
 
@@ -314,22 +303,32 @@ public class NoteSystemMainWindow extends JFrame {
 		
 	}
 	
+	private void updateFields()
+	{
+		noteTitleTextPane.setText(currentNote.getTitle());
+		noteDateTextPane.setText(currentNote.getDate());
+		noteDescriptionTextPane.setText(currentNote.getDesc());
+	}
+	
 
 	private void saveNote() 
 	{
-		noteKeeper.saveNote(noteTitleTextPane.getText(), 
-					noteDescriptionTextPane.getText(), currentNote);
+		currentNote.setTitle(noteTitleTextPane.getText());
+		currentNote.setDesc(noteDescriptionTextPane.getText());
+		currentNote.updateDate();	
+	
+		noteModelList.updateNote(currentNote);
 	}
 	
 	private void loadCurrentTags()
 	{
-		ArrayList<Tag> currentTags = currentNote.getTags();
+		ArrayList<String> currentTags = currentNote.getTags();
 		
 		currentTagModelList.removeAllElements();
-		for (Tag t : currentTags)
+		for (String t : currentTags)
 			currentTagModelList.addElement(t);
 	}
-	
+	/*
 	public void loadNotes(ArrayList<Note> noteList)
 	{
 		noteModelList.removeAllElements();
@@ -338,11 +337,12 @@ public class NoteSystemMainWindow extends JFrame {
 			noteModelList.addElement(n);
 	}
 	
-	public void loadTags(ArrayList<Tag> tagList)
+	public void loadTags(ArrayList<String> tagList)
 	{
 		tagModelList.removeAllElements();
 		
-		for (Tag t : tagList)
+		for (String t : tagList)
 			tagModelList.addElement(t);
 	}
+	 */
 }
