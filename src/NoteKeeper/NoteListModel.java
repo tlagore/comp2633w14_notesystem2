@@ -20,9 +20,9 @@ public class NoteListModel extends AbstractListModel<Note>
 	public Note loadNewNote()
 	{
 		Note newNote = null;
-		newNote = noteSystem.loadNewNote();
 		
-		fireContentsChanged(this, 0, noteList.size() - 1);
+		newNote = noteSystem.loadNewNote();
+		fireChange();
 		
 		return newNote;
 	}
@@ -33,9 +33,11 @@ public class NoteListModel extends AbstractListModel<Note>
 		fireChange();
 	}
 	
-	private void fireChange()
+	public void fireChange()
 	{
-		noteList = noteSystem.quickSort(noteList);
+		noteSystem.quickSortNotes();
+		noteList = noteSystem.getNoteList();
+		
 		fireContentsChanged(this, 0, noteList.size() - 1);
 	}
 	
@@ -56,8 +58,8 @@ public class NoteListModel extends AbstractListModel<Note>
 	
 	public void removeNote(Note note)
 	{
-		noteSystem.removeNotes(note);
-		fireContentsChanged(this, 0, noteList.size() - 1);
+		noteSystem.removeNote(note);
+		fireChange();
 	}
 
 /*

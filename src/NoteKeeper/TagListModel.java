@@ -15,6 +15,15 @@ public class TagListModel extends AbstractListModel<Tag>
 		tagList = noteSystem.getTagList();
 	}
 	
+	public void fireChange()
+	{
+//		noteSystem.quickSortTags();
+	//	tagList = noteSystem.getTagList();
+		
+		fireContentsChanged(this, 0, tagList.size() - 1);
+	}
+	
+	
 	public void addTag(Tag tag)
 	{
 		

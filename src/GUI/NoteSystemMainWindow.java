@@ -19,35 +19,79 @@ public class NoteSystemMainWindow extends JFrame {
 	private JPanel	contentPane;
 	private TagListModel tagModelList;
 	private NoteListModel noteModelList;
-	
-//	private DefaultListModel<Note> noteModelList;
-//	private DefaultListModel<Tag> tagModelList;
 	private DefaultListModel<String> currentTagModelList;
 	private Note currentNote;
-	private JTextField tagTextField;
-	private JButton btnRemove, btnNewNote, btnEdit, btnSave, btnAddTag, btnClose;
-	private JPanel noteViewPanel;
-	private JPanel titelBorderPanel;
-	private JTextPane noteDateTextPane;
-	private JTextPane noteTitleTextPane;
-	private JPanel descriptionBorderPanel;
-	private JTextPane noteDescriptionTextPane;
-	private JPanel searchByTagBorder;
-	private JLabel lblSmartwaterNotes;
-	private JList noteJList, tagJList, currentTagJList;
-	private JPanel tagPanel;
-	private JTextField noteTagTextField;
-	private JScrollPane noteScrollPane;
-	private JScrollPane tagScrollPane;
-	private JScrollPane noteTagScrollPane;
-	private JButton btnRemoveTag;
-	
 	private NoteSystem noteSystem;
+
+	private JTextField tagTextField;
+	private JButton btnRemove, btnNewNote, btnEdit, btnSave, btnAddTag, btnClose,
+					btnRemoveTag;
+	private JPanel noteViewPanel, titelBorderPanel,  descriptionBorderPanel,
+					searchByTagBorder, tagPanel;
+	private JTextPane noteDateTextPane, noteTitleTextPane, noteDescriptionTextPane;
+	private JLabel lblSmartwaterNotes;
+	private JList noteJList, currentTagList;
+	private JTextField noteTagTextField;
+	private JScrollPane noteScrollPane, tagScrollPane;
+	private JList tagJList;
+	private JScrollPane scrollPane;
+	private JScrollPane noteTagScrollPane;
+	private JList currentTagJList;
+	
+
 
 	
 	//-------------------------------INNER CLASS ---------------------------//
 	//Purpose:  Handles actions that are performed via the GUI				//
 	//----------------------------------------------------------------------//
+	
+	public class MainWindowMouseHandlr implements MouseListener {
+		private NoteSystemMainWindow parent;
+		
+		public MainWindowMouseHandlr(NoteSystemMainWindow parent)
+		{
+			this.parent = parent;
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			boolean editable = btnEdit.isEnabled();
+			
+			if (!editable)
+			{
+				saveNote();
+				toggleEdit();
+			}
+				
+			currentNote = noteModelList.getElementAt(noteJList.getSelectedIndex());
+			updateFields();
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+	
 	public class MainWindowButtonHandlr implements ActionListener {
 		private NoteSystemMainWindow parent;
 
@@ -68,25 +112,32 @@ public class NoteSystemMainWindow extends JFrame {
 				for (Note note : selected)
 					noteModelList.removeNote(note);		
 				
+				if (noteModelList.getSize() == 0)
+					currentNote = noteModelList.loadNewNote();
+				else
+					currentNote = noteModelList.getElementAt(0);
+				
+				updateFields();
+				
 			} else if (e.getSource().equals(btnSave))
 			{
-				
 				saveNote();
 				toggleEdit();
 				
 			} else if (e.getSource().equals(btnNewNote))
 			{
 				currentNote = noteModelList.loadNewNote();
-				
+				updateFields();
 				
 			} else if (e.getSource().equals(btnAddTag))
 			{
 				currentNote.addTag(noteTagTextField.getText());
+				noteTagTextField.setText("");
 				loadCurrentTags();
 				
 			} else if (e.getSource().equals(btnRemoveTag))
 			{
-				List<String> selectedTags = currentTagJList.getSelectedValuesList();
+				List<String> selectedTags = tagJList.getSelectedValuesList();
 				
 				for (String t : selectedTags)
 					currentNote.removeTag(t);
@@ -105,6 +156,7 @@ public class NoteSystemMainWindow extends JFrame {
 	{
 		this.noteSystem = noteSystem;
 		MainWindowButtonHandlr handler = new MainWindowButtonHandlr(this);
+		MainWindowMouseHandlr mouseHandler = new MainWindowMouseHandlr(this);
 		currentNote = note;
 		
 		setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
@@ -200,10 +252,15 @@ public class NoteSystemMainWindow extends JFrame {
 		descriptionBorderPanel.add(noteDescriptionTextPane);
 		noteDescriptionTextPane.setBackground(SystemColor.controlHighlight);
 		
+		
 		noteTagScrollPane = new JScrollPane();
 		noteTagScrollPane.setBounds(321, 16, 96, 169);
 		descriptionBorderPanel.add(noteTagScrollPane);
-		
+		currentTagModelList = new DefaultListModel<String>();
+		currentTagJList = new JList();
+		currentTagJList.setModel(currentTagModelList);
+		noteTagScrollPane.setViewportView(currentTagJList);
+	
 		
 		tagPanel = new JPanel();
 		tagPanel.setBorder(new TitledBorder(null, "Add Tag", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -234,35 +291,26 @@ public class NoteSystemMainWindow extends JFrame {
 		noteScrollPane.setBounds(510, 53, 173, 386);
 		contentPane.add(noteScrollPane);
 		
-		tagModelList = new TagListModel(noteSystem);
-		tagJList = new JList();
-		tagJList.setModel(tagModelList);
-		noteTagScrollPane.setViewportView(tagJList);
-		tagJList.setBackground(SystemColor.controlHighlight);
 		
 		noteModelList = new NoteListModel(noteSystem);
 		noteJList = new JList();
-/*  	noteJList.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				currentNote = noteKeeper.loadNote(noteJList.getSelectedIndex());
-			}
-		});
-*/		noteJList.setModel(noteModelList);
+		noteJList.addMouseListener(mouseHandler);
+		noteJList.setModel(noteModelList);
 		noteScrollPane.setViewportView(noteJList);
 		noteJList.setBorder(new LineBorder(new Color(0, 0, 0)));
 		noteJList.setBackground(SystemColor.control);
 		
 		tagScrollPane = new JScrollPane();
-		tagScrollPane.setBounds(699, 53, 105, 332);
+		tagScrollPane.setBounds(699, 55, 99, 335);
 		contentPane.add(tagScrollPane);
 		
-		currentTagModelList = new DefaultListModel<String>();
-		currentTagJList = new JList();
-		tagJList.setModel(currentTagModelList);
-		tagScrollPane.setViewportView(currentTagJList);
-		currentTagJList.setBackground(SystemColor.control);
-		currentTagJList.setBorder(new LineBorder(new Color(0, 0, 0)));
+		tagModelList = new TagListModel(noteSystem);
+		tagJList = new JList();
+		tagJList.setModel(tagModelList);
+		tagScrollPane.setViewportView(tagJList);
+		tagJList.setBorder(new LineBorder(new Color(0, 0, 0)));
+		tagJList.setBackground(SystemColor.control);
+		
 		
 		updateFields();
 		loadCurrentTags();
@@ -308,16 +356,21 @@ public class NoteSystemMainWindow extends JFrame {
 		noteTitleTextPane.setText(currentNote.getTitle());
 		noteDateTextPane.setText(currentNote.getDate());
 		noteDescriptionTextPane.setText(currentNote.getDesc());
+		
+		loadCurrentTags();
 	}
 	
 
 	private void saveNote() 
 	{
+		noteTagTextField.setText("");
+		
 		currentNote.setTitle(noteTitleTextPane.getText());
 		currentNote.setDesc(noteDescriptionTextPane.getText());
 		currentNote.updateDate();	
 	
 		noteModelList.updateNote(currentNote);
+		tagModelList.fireChange();
 	}
 	
 	private void loadCurrentTags()
@@ -328,21 +381,4 @@ public class NoteSystemMainWindow extends JFrame {
 		for (String t : currentTags)
 			currentTagModelList.addElement(t);
 	}
-	/*
-	public void loadNotes(ArrayList<Note> noteList)
-	{
-		noteModelList.removeAllElements();
-		
-		for (Note n : noteList)
-			noteModelList.addElement(n);
-	}
-	
-	public void loadTags(ArrayList<String> tagList)
-	{
-		tagModelList.removeAllElements();
-		
-		for (String t : tagList)
-			tagModelList.addElement(t);
-	}
-	 */
 }
