@@ -5,6 +5,7 @@ package NoteSystem;
 
 import java.io.*;
 import java.util.*;
+import GUI.NoteSystemMainWindow;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 
@@ -20,6 +21,7 @@ public class NoteSystem
 	private ArrayList< Note > m_NotesList;
 	private ArrayList< Tag > m_TagsList;
 	private int m_iNextID;
+	private NoteSystemMainWindow m_Window;
 	
 	// Constants
 	private static final String s_FileName = "Notes.xml";
@@ -35,6 +37,9 @@ public class NoteSystem
 		m_TagsList = new ArrayList< Tag >( );
 		loadList( );
 		m_iNextID = m_NotesList.size( ) + 1;
+		
+		m_Window = new NoteSystemMainWindow( this, m_NotesList.get( 0 ) );
+		m_Window.run( );
 	}
 	
 	/**
