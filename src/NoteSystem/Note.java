@@ -18,7 +18,6 @@ import java.util.Locale;
 public class Note extends SortableNoteTag
 {
 	// Private Variables
-	private int m_iID;
 	private String m_sTitle, m_sDesc;
 	private ArrayList< String > m_sTags;
 	private Calendar m_cDate;
@@ -31,31 +30,21 @@ public class Note extends SortableNoteTag
 	 */
 	public Note( int iNewID, Calendar cNewDate, String sNewTitle, String sNewDesc )
 	{
-		m_iID 		= iNewID;
 		m_cDate 	= cNewDate;
 		m_sTitle	= sNewTitle;
 		m_sDesc 	= sNewDesc;
 		m_sTags		= new ArrayList< String >( );
 	}
-	/**
-	 * Separate Copy Constructor for setting a new ID. 
-	 */
-	public Note( int iID, Note nOther )
-    {
-		this( nOther );
-		this.m_iID = nOther.m_iID;
-    }
 	
 	/**
 	 * Default Copy Constructor.
 	 */
 	public Note( Note nOther )
 	{
-		this.m_iID 		= nOther.m_iID;
 		this.m_sTitle 	= nOther.m_sTitle;
 		this.m_sDesc 	= nOther.m_sDesc;
 		this.m_cDate	= nOther.m_cDate;
-		this.m_sTags		= nOther.m_sTags;
+		this.m_sTags	= nOther.m_sTags;
 	}
 	
 	/**
@@ -64,7 +53,7 @@ public class Note extends SortableNoteTag
 	@Override
 	public int hashCode( )
 	{
-		int iReturnCode 	= m_iID * PRIME;
+		int iReturnCode 	= 0;
 		
 		iReturnCode 		+= m_sTitle.hashCode( ) +
 							   m_sDesc.hashCode( ) +
@@ -93,7 +82,10 @@ public class Note extends SortableNoteTag
 		else
 		{
 			eRHS = ( Note )obj;
-			bReturnValue = m_iID == eRHS.m_iID;	
+			bReturnValue = 	m_sTitle == eRHS.m_sTitle &&
+							m_cDate.equals( eRHS.m_cDate ) &&
+							m_sTags.equals( eRHS.m_sTags ) &&
+							m_sDesc.equals( eRHS.m_sDesc );
 		}
 		
 		return bReturnValue;
@@ -102,7 +94,6 @@ public class Note extends SortableNoteTag
 	/**
 	 * Getters and Setters
 	 */
-	public int getID( )								{ return m_iID; }
 	public String getTitle( )						{ return m_sTitle; }
 	public void setTitle( String sNewTitle )		{ m_sTitle = sNewTitle; }
 	public String getDesc( )						{ return m_sDesc; }

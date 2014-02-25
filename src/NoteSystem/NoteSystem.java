@@ -53,12 +53,16 @@ public class NoteSystem
 	 */
 	private void loadList( )
 	{
+		String sInput = "";
         try
         {
             XStream xstream = new XStream(new StaxDriver() );
             Scanner input = new Scanner( new File( s_FileName ) );
             
-            m_NotesList = ( ArrayList< Note > ) xstream.fromXML( input.nextLine() );
+            while( input.hasNext( ) )
+            	sInput += input.nextLine( ) + "\n";
+            
+            m_NotesList = ( ArrayList< Note > ) xstream.fromXML( sInput );
             
             populateTagsList( );   
 
@@ -153,25 +157,6 @@ public class NoteSystem
 		
 		return m_ReturnTags;
 	}
-		
-	/**
-	 * Re-evaluates list with fresh IDs in order to avoid ID collisions.
-	 */
-	private  void consolidateIDs( )
-	{
-		m_iNextID = 0;
-		
-		for( Note nIndex : m_NotesList )
-		{
-			if( nIndex.getID( ) != m_iNextID )
-			{
-				m_NotesList.add( m_iNextID, new Note( m_iNextID, nIndex ) );
-				m_NotesList.remove( nIndex );
-			}
-			
-			m_iNextID++;
-		}
-	}
 	
 	/**
 	 * Generates and returns a new note that is added to the NotesList.
@@ -211,6 +196,44 @@ public class NoteSystem
 		}
 		
 		return sReturnString;
+	}
+	
+	/**
+	 * Returns an array of Notes that are adjacent to tags with the specified substring in their value.
+	 * The keyword passed in is compared with each tag to see if the tag starts with the keyword.  If it
+	 * does, the Tag's adjacent notes are set into the return list with no duplicates being made.  The 
+	 * return list is sorted and returned.
+	 * 
+	 * @param sKeyWord	The substring to check tags with.
+	 * @return			Sorted ArrayList with all connected Notes.
+	 */
+	public ArrayList< Note > getFilteredNotes( String sKeyWord )
+	{
+		ArrayList< Note > alReturnList = new ArrayList< Note >( );
+		
+		for( Tag tIndex : getFilteredTags( sKeyWord ) )
+			for( Note nIndex : tIndex.getAdjacentNotes( ) )
+				if( !alReturnList.contains( nIndex ) )
+					alReturnList.add( nIndex );
+		
+		return quickSort( alReturnList );
+	}
+	
+	/**
+	 * Function that returns a narrowed down list of tags based on a specified keyword.
+	 * 
+	 * @param sKeyWord	The keyword to filter tags with.
+	 * @return			Sorted list of Filtered Tags.
+	 */
+	public ArrayList< Tag > getFilteredTags( String sKeyWord )
+	{
+		ArrayList< Tag > alReturnList = new ArrayList< Tag >( );
+		
+		for( Tag tIndex : m_TagsList )
+			if( tIndex.getTag( ).startsWith( sKeyWord ) )
+				alReturnList.add( tIndex );
+		
+		return quickSort( alReturnList );
 	}
 	
 	/**
@@ -274,8 +297,6 @@ public class NoteSystem
 	{
 		XStream xstream = new XStream( new StaxDriver() );
 		PrintStream outFile;
-		
-		consolidateIDs( );
 
         try
         {
