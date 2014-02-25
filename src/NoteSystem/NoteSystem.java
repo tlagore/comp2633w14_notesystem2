@@ -190,12 +190,18 @@ public class NoteSystem
 	}
 	
 	/**
+	 * Public functions for sorting the internal lists.
+	 */
+	public void quickSortNotes( ) { m_NotesList = quickSort( m_NotesList ); }
+	public void quickSortTags( ) { m_TagsList = quickSort( m_TagsList ); }
+	
+	/**
 	 * Function to sort a list of Notes and Tags.
 	 * 
 	 * @param m_SubList	The list of SortableNoteTag objects to sort.
 	 * @return			The sorted list.
 	 */
-	public < NT extends SortableNoteTag > ArrayList< NT > quickSort( ArrayList< NT > m_SubList )
+	private < NT extends SortableNoteTag > ArrayList< NT > quickSort( ArrayList< NT > m_SubList )
 	{
 		
 		ArrayList< NT > m_ReturnList	= new ArrayList< NT >( );
