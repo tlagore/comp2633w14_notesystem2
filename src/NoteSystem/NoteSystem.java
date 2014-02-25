@@ -70,7 +70,7 @@ public class NoteSystem
 	}
 	
 	/**
-	 * Populates the Tag list based on the current Node List.
+	 * Populates the Tag list based on the current Note List.
 	 */
 	private  void populateTagsList( )
 	{
@@ -99,7 +99,11 @@ public class NoteSystem
 		for( Tag tIndex : m_ReferencedTags )
 		{
 			if( !m_NoteTags.contains( tIndex.getTag( ) ) )
+			{
 				tIndex.removeNote( nNoteToUpdate );
+				if( tIndex.getAdjacentNotes( ).isEmpty( ) )
+					m_TagsList.remove( tIndex );
+			}
 			else
 				m_NoteTags.remove( tIndex.getTag( ) );
 		}
@@ -110,6 +114,26 @@ public class NoteSystem
 				m_TagsList.get( m_TagsList.indexOf( sIndex ) ).addNote( nNoteToUpdate );
 			else
 				m_TagsList.add( new Tag( sIndex, nNoteToUpdate ) );
+		}
+	}
+	
+	/**
+	 * Removes a tag from the tags list and clears the tag from any Notes that it tags.
+	 * 
+	 * @param sTagValue	The String Value of the tag to remove.
+	 */
+	public void removeTag( String sTagValue )
+	{
+		Tag removedTag = null;
+		
+		if( m_TagsList.contains( sTagValue ) )
+		{
+			removedTag = m_TagsList.get( m_TagsList.indexOf( sTagValue ) );
+			
+			for( Note nIndex : removedTag.getAdjacentNotes( ) )
+				nIndex.removeTag( sTagValue );
+			
+			m_TagsList.remove( removedTag );
 		}
 	}
 	
@@ -192,8 +216,8 @@ public class NoteSystem
 	/**
 	 * Public functions for sorting the internal lists.
 	 */
-	public void quickSortNotes( ) { m_NotesList = quickSort( m_NotesList ); }
-	public void quickSortTags( ) { m_TagsList = quickSort( m_TagsList ); }
+	public ArrayList< Note > quickSortNotes( ) { return ( m_NotesList = quickSort( m_NotesList ) ); }
+	public ArrayList< Tag > quickSortTags( ) { return ( m_TagsList = quickSort( m_TagsList ) ); }
 	
 	/**
 	 * Function to sort a list of Notes and Tags.
