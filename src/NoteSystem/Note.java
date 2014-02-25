@@ -20,7 +20,7 @@ public class Note extends SortableNoteTag
 	// Private Variables
 	private int m_iID;
 	private String m_sTitle, m_sDesc;
-	private ArrayList< Tag > m_Tags;
+	private ArrayList< String > m_sTags;
 	private Calendar m_cDate;
 	
 	// Constants
@@ -35,7 +35,7 @@ public class Note extends SortableNoteTag
 		m_cDate 	= cNewDate;
 		m_sTitle	= sNewTitle;
 		m_sDesc 	= sNewDesc;
-		m_Tags		= new ArrayList< Tag >( );
+		m_sTags		= new ArrayList< String >( );
 	}
 	/**
 	 * Separate Copy Constructor for setting a new ID. 
@@ -55,7 +55,7 @@ public class Note extends SortableNoteTag
 		this.m_sTitle 	= nOther.m_sTitle;
 		this.m_sDesc 	= nOther.m_sDesc;
 		this.m_cDate	= nOther.m_cDate;
-		this.m_Tags		= nOther.m_Tags;
+		this.m_sTags		= nOther.m_sTags;
 	}
 	
 	/**
@@ -69,7 +69,7 @@ public class Note extends SortableNoteTag
 		iReturnCode 		+= m_sTitle.hashCode( ) +
 							   m_sDesc.hashCode( ) +
 							   m_cDate.hashCode( ) +
-							   m_Tags.hashCode( );
+							   m_sTags.hashCode( );
 		
 		return iReturnCode;
 	}
@@ -112,19 +112,19 @@ public class Note extends SortableNoteTag
 																			m_cDate.getDisplayName( Calendar.MONTH, Calendar.SHORT, Locale.CANADA ),
 																			m_cDate.get( Calendar.YEAR ) ); }
 	public void updateDate( ) 						{ m_cDate.setTime( new Date( ) ); }
-	public ArrayList< Tag > getTags( ) 				{ return m_Tags; }
+	public ArrayList< String > getTags( ) 			{ return m_sTags; }
 	
 	/**
 	 * Functions to add and remove individual tags.
 	 */
-	public void addTag( Tag tTagToAdd ) 			
+	public void addTag( String rTagToAdd ) 			
 	{ 
-		if( !m_Tags.contains( tTagToAdd ) )
-			m_Tags.add( tTagToAdd );
+		if( !m_sTags.contains( rTagToAdd ) )
+			m_sTags.add( rTagToAdd );
 	}
-	public void removeTag( Tag tTagToRemove )	
+	public void removeTag( String rTagToRemove )	
 	{
-		m_Tags.remove( tTagToRemove );
+		m_sTags.remove( rTagToRemove );
 	}
 	
 	/**

@@ -67,22 +67,68 @@ public class NoteSystem
 	/**
 	 * Populates the Tag list based on the current Node List.
 	 */
-	private void populateTagsList( )
+	private synchronized void populateTagsList( )
 	{
 		for( Note nIndex : m_NotesList )
-			for( Tag tIndex : nIndex.getTags( ) )
+		{
+			for( String sIndex : nIndex.getTags( ) )
 			{
-				if( m_TagsList.contains( tIndex ) )
-					tIndex.addNote( nIndex );
+				if( m_TagsList.contains( sIndex ) )
+					m_TagsList.get( m_TagsList.indexOf( sIndex ) ).addNote( nIndex );
 				else
-					m_TagsList.add( tIndex );
+					m_TagsList.add( new Tag( sIndex, nIndex ) );
 			}
+		}
+	}
+	
+	/**
+	 * Internally updates Tag Connections to a particular Note.
+	 * 
+	 * @param nNoteToUpdate	The Note to cross-check connections to.
+	 */
+	public void updateNoteTagConnection( Note nNoteToUpdate )
+	{
+		ArrayList< Tag > m_ReferencedTags 	= getLinkedTags( nNoteToUpdate );
+		ArrayList< String > m_NoteTags		= nNoteToUpdate.getTags( );
+		
+		for( Tag tIndex : m_ReferencedTags )
+		{
+			if( !m_NoteTags.contains( tIndex.getTag( ) ) )
+				tIndex.removeNote( nNoteToUpdate );
+			else
+				m_NoteTags.remove( tIndex.getTag( ) );
+		}
+		
+		for( String sIndex : m_NoteTags )
+		{
+			if( m_TagsList.contains( sIndex ) )
+				m_TagsList.get( m_TagsList.indexOf( sIndex ) ).addNote( nNoteToUpdate );
+			else
+				m_TagsList.add( new Tag( sIndex, nNoteToUpdate ) );
+		}
+	}
+	
+	/**
+	 * Helper function to return a list of Tags that the Note parameter is connected to.
+	 * 
+	 * @param nReferenceNote	The Note to cross-reference.
+	 * @return					List of Tags that are connected to the note.
+	 */
+	private ArrayList< Tag > getLinkedTags( Note nReferenceNote )
+	{
+		ArrayList< Tag > m_ReturnTags = new ArrayList< Tag >( );
+		
+		for( Tag tIndex : m_TagsList )
+			if( tIndex.getAdjacentNotes( ).contains( nReferenceNote ) )
+				m_ReturnTags.add( tIndex );
+		
+		return m_ReturnTags;
 	}
 		
 	/**
 	 * Re-evaluates list with fresh IDs in order to avoid ID collisions.
 	 */
-	private void consolidateIDs( )
+	private synchronized void consolidateIDs( )
 	{
 		m_iNextID = 0;
 		
@@ -123,13 +169,16 @@ public class NoteSystem
 		int iTitleCount = 0;
 		String sReturnString = sTitle;		
 		
-		for( int i = 0; i < m_NotesList.size( ); ++i )
+		synchronized( m_NotesList )
 		{
-			if( m_NotesList.get( i ).getTitle( ).equals( sReturnString ) )
+			for( int i = 0; i < m_NotesList.size( ); ++i )
 			{
-				iTitleCount++;
-				sReturnString = sTitle + " - " + String.valueOf( iTitleCount );
-				i = 0;
+				if( m_NotesList.get( i ).getTitle( ).equals( sReturnString ) )
+				{
+					iTitleCount++;
+					sReturnString = sTitle + " - " + String.valueOf( iTitleCount );
+					i = 0;
+				}
 			}
 		}
 		
@@ -176,7 +225,7 @@ public class NoteSystem
 	 * @param sTitles	An array of multiple titles passed into the function.
 	 * 					Allows for the removal of multiple Notes at once.
 	 */
-	public void removeNotes( String... sTitles )
+	public synchronized void removeNotes( String... sTitles )
 	{
 		List< String > slTitles = Arrays.asList( sTitles );
 		
@@ -184,7 +233,7 @@ public class NoteSystem
 		{
 			if( slTitles.contains( nIndex.getTitle( ) ) )
 			{
-				for( Tag tIndex : nIndex.getTags( ) )
+				for( Tag tIndex : getLinkedTags( nIndex ) )
 					if( tIndex.removeNote( nIndex ) )
 						m_TagsList.remove( tIndex );
 				
