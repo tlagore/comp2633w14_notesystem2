@@ -140,8 +140,11 @@ public class NoteSystemMainWindow extends JFrame {
 				List<String> selectedTags = tagJList.getSelectedValuesList();
 				
 				for (String t : selectedTags)
+				{
 					currentNote.removeTag(t);
+				}
 				
+				noteSystem.updateNoteTagConnection(currentNote);
 				loadCurrentTags();
 			}
 		}
@@ -184,6 +187,12 @@ public class NoteSystemMainWindow extends JFrame {
 		searchByTagBorder.setLayout(null);
 		
 		tagTextField = new JTextField();
+		tagTextField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				/* TODO make the notes sort automatically */
+			}
+		});
 		tagTextField.setBounds(10, 16, 89, 24);
 		tagTextField.setBackground(SystemColor.controlHighlight);
 		searchByTagBorder.add(tagTextField);
