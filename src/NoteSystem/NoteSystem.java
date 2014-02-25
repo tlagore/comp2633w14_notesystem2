@@ -72,7 +72,7 @@ public class NoteSystem
 	/**
 	 * Populates the Tag list based on the current Node List.
 	 */
-	private synchronized void populateTagsList( )
+	private  void populateTagsList( )
 	{
 		for( Note nIndex : m_NotesList )
 		{
@@ -133,7 +133,7 @@ public class NoteSystem
 	/**
 	 * Re-evaluates list with fresh IDs in order to avoid ID collisions.
 	 */
-	private synchronized void consolidateIDs( )
+	private  void consolidateIDs( )
 	{
 		m_iNextID = 0;
 		
@@ -174,7 +174,6 @@ public class NoteSystem
 		int iTitleCount = 0;
 		String sReturnString = sTitle;		
 		
-		synchronized( m_NotesList )
 		{
 			for( int i = 0; i < m_NotesList.size( ); ++i )
 			{
@@ -227,24 +226,15 @@ public class NoteSystem
 	
 	/**
 	 * Removes the first Note with the specified Title
-	 * @param sTitles	An array of multiple titles passed into the function.
-	 * 					Allows for the removal of multiple Notes at once.
+	 * @param nNoteToRemove	The Note to remove from the list.
 	 */
-	public synchronized void removeNotes( String... sTitles )
+	public void removeNotes( Note nNoteToRemove )
 	{
-		List< String > slTitles = Arrays.asList( sTitles );
-		
-		for( Note nIndex : m_NotesList )
-		{
-			if( slTitles.contains( nIndex.getTitle( ) ) )
-			{
-				for( Tag tIndex : getLinkedTags( nIndex ) )
-					if( tIndex.removeNote( nIndex ) )
-						m_TagsList.remove( tIndex );
-				
-				m_NotesList.remove( nIndex );
-			}
-		}
+		for( Tag tIndex : getLinkedTags( nNoteToRemove ) )
+			if( tIndex.removeNote( nNoteToRemove ) )
+				m_TagsList.remove( tIndex );
+	
+		m_NotesList.remove( nNoteToRemove );
 	}
 	
 	/**
