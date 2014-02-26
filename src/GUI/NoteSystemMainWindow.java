@@ -56,9 +56,10 @@ public class NoteSystemMainWindow extends JFrame {
 	
 	
 	/**
-	 * Handles the 
+	 * Handles all mouse listening for connected objects.
 	 * 
-	 * @author Tyrone
+	 * @author Tyrone Lagore
+	 * @version February 24, 2014
 	 */
 	public class MainWindowMouseHandlr implements MouseListener {
 		private NoteSystemMainWindow parent;
@@ -101,9 +102,10 @@ public class NoteSystemMainWindow extends JFrame {
 	
 	
 	/**
+	 * Handles all key listening for connected objects.
 	 * 
-	 * @author Tyrone
-	 *
+	 * @author Tyrone Lagore
+	 * @version February 24, 2014
 	 */
 	public class MainWindowKeyHandlr implements KeyListener {
 		private NoteSystemMainWindow parent;
@@ -125,14 +127,15 @@ public class NoteSystemMainWindow extends JFrame {
 		@Override
 		public void keyTyped(KeyEvent e)
 		{
-			if (e.getSource().equals(tagTextField))
+			if (e.getSource().equals(noteTitleTextPane))
 				titleChanged = true;
 		}
 	}
 	/**
+	 * Handles all action listening for connected buttons.
 	 * 
-	 * @author Tyrone
-	 *
+	 * @author Tyrone Lagore
+	 * @version Ferburary 25, 2014
 	 */
 	public class MainWindowButtonHandlr implements ActionListener {
 		private NoteSystemMainWindow parent;
@@ -191,7 +194,6 @@ public class NoteSystemMainWindow extends JFrame {
 					currentNote.removeTag(t.getTag());
 				}
 				
-				noteSystem.updateNoteTagConnection(currentNote);
 				loadCurrentTags();
 			} else if (e.getSource().equals(btnClear))
 			{
@@ -216,7 +218,8 @@ public class NoteSystemMainWindow extends JFrame {
 
 
 	/**
-	 * Launch the application.
+	 * Name: run
+	 * Purpose: Launches the application.
 	 */
 	public void run() 
 	{
@@ -233,7 +236,6 @@ public class NoteSystemMainWindow extends JFrame {
 			}
 		});
 	}
-	
 
 	/**
 	 * Name: editable
@@ -277,21 +279,31 @@ public class NoteSystemMainWindow extends JFrame {
 		loadCurrentTags();
 	}
 	
-
+	/**
+	 * Name: saveNote
+	 * Purpose: Saves the fields that are currently in the Main Window to the internal
+	 * 			note.  If the title has changed, the title is also saved. 
+	 */
 	private void saveNote() 
 	{
 		noteTagTextField.setText("");
 		
-		currentNote.setTitle(noteTitleTextPane.getText());
 		currentNote.setDesc(noteDescriptionTextPane.getText());
 		currentNote.updateDate();	
 	
 		noteListModel.updateNote(currentNote, noteTitleTextPane.getText(), titleChanged);
 		
+		updateFields();
+		
 		titleChanged = false;
 		tagListModel.fireChange();
 	}
 	
+	/**
+	 * Name: loadCurrentTags
+	 * Purpose: Loads the tags of the selected note into the list of tags within the 
+	 * 			note view.
+	 */
 	private void loadCurrentTags()
 	{
 		ArrayList<String> currentTags = currentNote.getTags();
@@ -301,17 +313,35 @@ public class NoteSystemMainWindow extends JFrame {
 			currentTagModelList.addElement(t);
 	}
 
+	/**
+	 * Name: confirmCloseWIndowHasClosed
+	 * Purpose: Lets the main window know that the confirm window has closed by method
+	 * 			of decline or irregular close (closing via the top right x)
+	 */
 	public void confirmCloseWindowHasClosed() 
 	{
 		btnClose.setEnabled(true);
 	}
 
+	/**
+	 * Name exitAndSave
+	 * Purpose: Saves the current list to an XML file, closes the window, and terminates the
+	 * 			program by disposing of all connected resources.
+	 */
 	public void exitAndSave() 
 	{
 		noteSystem.saveListToXML();
 		setVisible(false);
 		dispose();
 	}
+	
+	/**
+	 * Name: NoteSystemMainWindow
+	 * Purpose: Constructor for the Main window, creates the actual frame and all connected
+	 * 			buttons/panels/frames.
+	 * @param noteSystem Reference to the internal note system used 
+	 * @param note The first note that the system will load to view (always the first)
+	 */
 	public NoteSystemMainWindow(NoteSystem noteSystem, Note note)
 	{
 		this.noteSystem = noteSystem;
@@ -447,7 +477,7 @@ public class NoteSystemMainWindow extends JFrame {
 		descriptionBorderPanel.add(noteTagScrollPane);
 		currentTagModelList = new DefaultListModel<String>();
 		currentTagJList = new JList();
-		currentTagJList.setFont(new Font("Dotum", Font.PLAIN, 12));
+		currentTagJList.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		currentTagJList.setBackground(SystemColor.controlHighlight);
 		currentTagJList.setModel(currentTagModelList);
 		noteTagScrollPane.setRowHeaderView(currentTagJList);

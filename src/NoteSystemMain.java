@@ -7,8 +7,11 @@ import NoteSystem.*;
 /**
  * Description
  *
+ * @author Tyrone Lagore
  * @author	James C. Coté
- * @version v1.0 - Feb 14, 2014
+ * @author Chris Gonzalez
+ * 
+ * @version v4.93 - Feb 14, 2014
  */
 public class NoteSystemMain 
 {	
