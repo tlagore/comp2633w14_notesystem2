@@ -56,8 +56,6 @@ public class Tag extends SortableNoteTag
 		
 		if( null == obj )
 			bReturnValue = false;
-		else if( obj.getClass( ) == String.class )
-			bReturnValue = m_sValue.equals( (String)obj );
 		else if( obj == this )
 			bReturnValue = true;
 		else if( !( obj.getClass( ) == this.getClass( ) ) )

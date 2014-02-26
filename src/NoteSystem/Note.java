@@ -28,7 +28,7 @@ public class Note extends SortableNoteTag
 	/**
 	 * Default Constructor to generate a new Note.
 	 */
-	public Note( int iNewID, Calendar cNewDate, String sNewTitle, String sNewDesc )
+	public Note( Calendar cNewDate, String sNewTitle, String sNewDesc )
 	{
 		m_cDate 	= cNewDate;
 		m_sTitle	= sNewTitle;

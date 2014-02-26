@@ -20,7 +20,6 @@ public class NoteSystem
 	// Private Variables
 	private ArrayList< Note > m_NotesList;
 	private ArrayList< Tag > m_TagsList;
-	private int m_iNextID;
 	private NoteSystemMainWindow m_Window;
 	
 	// Constants
@@ -36,7 +35,6 @@ public class NoteSystem
 		m_NotesList = new ArrayList< Note >( );
 		m_TagsList = new ArrayList< Tag >( );
 		loadList( );
-		m_iNextID = m_NotesList.size( ) + 1;
 		
 		m_Window = new NoteSystemMainWindow( this, m_NotesList.get( 0 ) );
 		m_Window.run( );
@@ -99,6 +97,7 @@ public class NoteSystem
 	{
 		ArrayList< Tag > m_ReferencedTags 	= getLinkedTags( nNoteToUpdate );
 		ArrayList< String > m_NoteTags		= nNoteToUpdate.getTags( );
+		Tag m_ReferenceTag = null;
 		
 		for( Tag tIndex : m_ReferencedTags )
 		{
@@ -112,13 +111,32 @@ public class NoteSystem
 				m_NoteTags.remove( tIndex.getTag( ) );
 		}
 		
+		
 		for( String sIndex : m_NoteTags )
 		{
-			if( m_TagsList.contains( sIndex ) )
-				m_TagsList.get( m_TagsList.indexOf( sIndex ) ).addNote( nNoteToUpdate );
+			m_ReferenceTag = getTagByValue( sIndex );
+			if( m_ReferenceTag != null )
+				m_ReferenceTag.addNote( nNoteToUpdate );
 			else
 				m_TagsList.add( new Tag( sIndex, nNoteToUpdate ) );
 		}
+	}
+	
+	/**
+	 * Given a string value, this function will return the tag that matches the value.
+	 * It will return null if no tag could be found.
+	 * 
+	 * @param sValue	The String Value of the Tag to find.
+	 * @return			Null if a valid tag could not be found.  Otherwise, returns the 
+	 * 					desired tag.
+	 */
+	private Tag getTagByValue( String sValue )
+	{		
+		for( Tag nIndex : m_TagsList )
+			if( nIndex.getTag( ).equals( sValue ) )
+				return nIndex;
+		
+		return null;
 	}
 	
 	/**
@@ -164,7 +182,7 @@ public class NoteSystem
 	 */
 	public Note loadNewNote( )
 	{
-		Note nNewNote = new Note( m_iNextID++, Calendar.getInstance( ), getUniqueTitle( s_DefaultTitle ), "" );
+		Note nNewNote = new Note( Calendar.getInstance( ), getUniqueTitle( s_DefaultTitle ), "" );
 		
 		m_NotesList.add( nNewNote );
 		
@@ -181,19 +199,15 @@ public class NoteSystem
 	public String getUniqueTitle( String sTitle )
 	{
 		int iTitleCount = 0;
-		String sReturnString = sTitle;		
+		String sReturnString = sTitle;
 		
-		{
-			for( int i = 0; i < m_NotesList.size( ); ++i )
-			{
-				if( m_NotesList.get( i ).getTitle( ).equals( sReturnString ) )
-				{
-					iTitleCount++;
-					sReturnString = sTitle + " - " + String.valueOf( iTitleCount );
-					i = 0;
-				}
-			}
-		}
+		ArrayList< String > m_TitleList = new ArrayList< String >( );
+		
+		for( Note nIndex : m_NotesList )
+			m_TitleList.add( nIndex.getTitle( ) );
+		
+		while( m_TitleList.contains( sReturnString ) )
+			sReturnString = sTitle + " - " + String.valueOf( ++iTitleCount );
 		
 		return sReturnString;
 	}
