@@ -24,6 +24,7 @@ public class Note extends SortableNoteTag
 	
 	// Constants
 	private static final int PRIME = 11;
+	private static final int COL_WIDTH = 15;
 	
 	/**
 	 * Default Constructor to generate a new Note.
@@ -141,6 +142,12 @@ public class Note extends SortableNoteTag
 	@Override
 	public String toString( )
 	{
-		return String.format( "%-15s%-15s", m_sTitle, getDate( ) );
+		String sFormatString = "%-" + COL_WIDTH + "s%" + COL_WIDTH + "s";
+		String sAmendedTitle = m_sTitle.length( ) < COL_WIDTH ? m_sTitle : m_sTitle.substring( 0, COL_WIDTH - 4 ) + "..." ;
+		
+		while( sAmendedTitle.length( ) < COL_WIDTH )
+			sAmendedTitle += " ";
+				
+		return String.format( sFormatString, sAmendedTitle, getDate( ) );
 	}
 }
