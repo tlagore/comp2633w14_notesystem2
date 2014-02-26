@@ -15,9 +15,15 @@ import java.awt.event.*;
 
 import javax.swing.border.*;
 
+/**
+ * The main interface and window that handles interaction of the user with the note system
+ * 
+ * @version February 25
+ * @author Tyrone
+ */
+
 public class NoteSystemMainWindow extends JFrame {
 
-	private JPanel	contentPane;
 	private TagListModel tagListModel;
 	private NoteListModel noteListModel;
 	private DefaultListModel<String> currentTagModelList;
@@ -26,23 +32,20 @@ public class NoteSystemMainWindow extends JFrame {
 
 	private JTextField tagTextField;
 	private JButton btnRemove, btnNewNote, btnEdit, btnSave, btnAddTag, btnClose,
-					btnRemoveTag;
+					btnRemoveTag, btnClear;
 	private JPanel noteViewPanel, titelBorderPanel,  descriptionBorderPanel,
-					searchByTagBorder, tagPanel;
+					searchByTagBorder, tagPanel, contentPane;
 	private JTextPane noteDateTextPane, noteTitleTextPane, noteDescriptionTextPane;
 	private JLabel lblSmartwaterNotes;
 	
 	private JList<Note> noteJList;
-	private JList<String> currentTagList;	
+	private JList<String> currentTagJList;	
 	private JList<Tag> tagJList;
 	
 	private JTextField noteTagTextField;
-	private JScrollPane noteScrollPane, tagScrollPane;
-
-	private JScrollPane scrollPane;
-	private JScrollPane noteTagScrollPane;
-	private JList currentTagJList;
-	private JButton btnClear;
+	private JScrollPane noteScrollPane, tagScrollPane, noteTagScrollPane;
+	
+	private boolean titleChanged;
 	
 
 
@@ -53,9 +56,9 @@ public class NoteSystemMainWindow extends JFrame {
 	
 	
 	/**
+	 * Handles the 
 	 * 
 	 * @author Tyrone
-	 *
 	 */
 	public class MainWindowMouseHandlr implements MouseListener {
 		private NoteSystemMainWindow parent;
@@ -120,7 +123,11 @@ public class NoteSystemMainWindow extends JFrame {
 			}
 		}
 		@Override
-		public void keyTyped(KeyEvent e) {}
+		public void keyTyped(KeyEvent e)
+		{
+			if (e.getSource().equals(tagTextField))
+				titleChanged = true;
+		}
 	}
 	/**
 	 * 
@@ -156,6 +163,7 @@ public class NoteSystemMainWindow extends JFrame {
 					currentNote = noteListModel.getElementAt(0);
 				
 				updateFields();
+				tagListModel.fireChange();
 				
 			} else if (e.getSource().equals(btnSave))
 			{
@@ -205,9 +213,110 @@ public class NoteSystemMainWindow extends JFrame {
 	/**
 	 * Create the frame.
 	 */
+
+
+	/**
+	 * Launch the application.
+	 */
+	public void run() 
+	{
+		EventQueue.invokeLater(new Runnable() 
+		{
+			public void run()
+			{
+				try 
+				{
+					setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
+
+	/**
+	 * Name: editable
+	 * Purpose: Toggles whether certain fields are editable or not based on the boolean
+	 * 			passed in.
+	 *  
+	 * @param enable true = set editable to true, false = set editable to false
+	 * 
+	 */
+	
+	private void editable(boolean enable)
+	{
+		Color color = enable ? new Color(240,248,255) : SystemColor.controlHighlight;
+		
+		btnEdit.setEnabled					(!enable);
+		btnSave.setEnabled					(enable);
+		btnAddTag.setEnabled				(enable);
+		btnRemoveTag.setEnabled				(enable);
+		noteTitleTextPane.setEditable		(enable);
+		noteDescriptionTextPane.setEditable	(enable);
+		noteTagTextField.setEditable		(enable);
+		
+		noteTagTextField.setBackground(color);
+		noteDescriptionTextPane.setBackground(color);
+		noteTitleTextPane.setBackground(color);
+		currentTagJList.setBackground(color);
+		
+	}
+	
+	/**
+	 * Name: updateFields
+	 * Purpose: updateFields updates the visual presentation of the Title, Date, Description
+	 * 			and Tags of the current note being viewed.
+	 */
+	private void updateFields()
+	{
+		noteTitleTextPane.setText(currentNote.getTitle());
+		noteDateTextPane.setText(currentNote.getDate());
+		noteDescriptionTextPane.setText(currentNote.getDesc());
+		
+		loadCurrentTags();
+	}
+	
+
+	private void saveNote() 
+	{
+		noteTagTextField.setText("");
+		
+		currentNote.setTitle(noteTitleTextPane.getText());
+		currentNote.setDesc(noteDescriptionTextPane.getText());
+		currentNote.updateDate();	
+	
+		noteListModel.updateNote(currentNote, noteTitleTextPane.getText(), titleChanged);
+		
+		titleChanged = false;
+		tagListModel.fireChange();
+	}
+	
+	private void loadCurrentTags()
+	{
+		ArrayList<String> currentTags = currentNote.getTags();
+		
+		currentTagModelList.removeAllElements();
+		for (String t : currentTags)
+			currentTagModelList.addElement(t);
+	}
+
+	public void confirmCloseWindowHasClosed() 
+	{
+		btnClose.setEnabled(true);
+	}
+
+	public void exitAndSave() 
+	{
+		noteSystem.saveListToXML();
+		setVisible(false);
+		dispose();
+	}
 	public NoteSystemMainWindow(NoteSystem noteSystem, Note note)
 	{
 		this.noteSystem = noteSystem;
+		
+		titleChanged = false;
 
 		MainWindowButtonHandlr handler = new MainWindowButtonHandlr(this);
 		MainWindowKeyHandlr keyHandler = new MainWindowKeyHandlr(this);
@@ -297,6 +406,7 @@ public class NoteSystemMainWindow extends JFrame {
 		titelBorderPanel.setLayout(null);
 		
 		noteTitleTextPane = new JTextPane();
+		noteTitleTextPane.addKeyListener(keyHandler);
 		noteTitleTextPane.setFont(new Font("Dotum", Font.PLAIN, 12));
 		noteTitleTextPane.setToolTipText("Enter a title for your note.");
 		noteTitleTextPane.setEditable(false);
@@ -409,94 +519,5 @@ public class NoteSystemMainWindow extends JFrame {
 		
 		updateFields();
 		loadCurrentTags();
-	}
-
-	/**
-	 * Launch the application.
-	 */
-	public void run() 
-	{
-		EventQueue.invokeLater(new Runnable() 
-		{
-			public void run()
-			{
-				try 
-				{
-					setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-	
-
-	/**
-	 * Name: editable
-	 * Purpose: Toggles whether certain fields are editable or not based on the boolean
-	 * 			passed in.
-	 *  
-	 * @param enable true = set editable to true, false = set editable to false
-	 * 
-	 */
-	
-	private void editable(boolean enable)
-	{
-
-		btnEdit.setEnabled					(!enable);
-		btnSave.setEnabled					(enable);
-		btnAddTag.setEnabled				(enable);
-		btnRemoveTag.setEnabled				(enable);
-		noteTitleTextPane.setEditable		(enable);
-		noteDescriptionTextPane.setEditable	(enable);
-		noteTagTextField.setEditable		(enable);		
-	}
-	
-	/**
-	 * Name: updateFields
-	 * Purpose: updateFields updates the visual presentation of the Title, Date, Description
-	 * 			and Tags of the current note being viewed.
-	 */
-	private void updateFields()
-	{
-		noteTitleTextPane.setText(currentNote.getTitle());
-		noteDateTextPane.setText(currentNote.getDate());
-		noteDescriptionTextPane.setText(currentNote.getDesc());
-		
-		loadCurrentTags();
-	}
-	
-
-	private void saveNote() 
-	{
-		noteTagTextField.setText("");
-		
-		currentNote.setTitle(noteTitleTextPane.getText());
-		currentNote.setDesc(noteDescriptionTextPane.getText());
-		currentNote.updateDate();	
-	
-		noteListModel.updateNote(currentNote);
-		tagListModel.fireChange();
-	}
-	
-	private void loadCurrentTags()
-	{
-		ArrayList<String> currentTags = currentNote.getTags();
-		
-		currentTagModelList.removeAllElements();
-		for (String t : currentTags)
-			currentTagModelList.addElement(t);
-	}
-
-	public void confirmCloseWindowHasClosed() 
-	{
-		btnClose.setEnabled(true);
-	}
-
-	public void exitAndSave() 
-	{
-		noteSystem.saveListToXML();
-		setVisible(false);
-		dispose();
 	}
 }
