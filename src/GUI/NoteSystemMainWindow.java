@@ -230,13 +230,17 @@ public class NoteSystemMainWindow extends JFrame {
 		contentPane.setLayout(null);
 		
 		btnNewNote = new JButton("New Note");
+		btnNewNote.setFont(new Font("Dotum", Font.PLAIN, 11));
+		btnNewNote.setToolTipText("Create a new, empty note.");
 		btnNewNote.addActionListener(handler);
-		btnNewNote.setBounds(510, 19, 173, 23);
+		btnNewNote.setBounds(481, 20, 173, 23);
 		contentPane.add(btnNewNote);
 		
 		btnRemove = new JButton("Remove");
+		btnRemove.setFont(new Font("Dotum", Font.PLAIN, 11));
+		btnRemove.setToolTipText("Select one or more notes and this will remove the notes from the system.");
 		btnRemove.addActionListener(handler);
-		btnRemove.setBounds(510, 450, 173, 23);
+		btnRemove.setBounds(481, 450, 173, 23);
 		contentPane.add(btnRemove);
 		
 		searchByTagBorder = new JPanel();
@@ -246,6 +250,7 @@ public class NoteSystemMainWindow extends JFrame {
 		searchByTagBorder.setLayout(null);
 		
 		tagTextField = new JTextField();
+		tagTextField.setFont(new Font("Dotum", Font.PLAIN, 11));
 		tagTextField.addKeyListener(keyHandler);
 		tagTextField.setBounds(10, 16, 89, 24);
 		tagTextField.setBackground(SystemColor.controlHighlight);
@@ -253,76 +258,88 @@ public class NoteSystemMainWindow extends JFrame {
 		tagTextField.setColumns(1);
 
 		btnEdit = new JButton("Edit");
+		btnEdit.setFont(new Font("Dotum", Font.PLAIN, 11));
+		btnEdit.setToolTipText("Allows you to edit the contents of the selected note.");
 		btnEdit.addActionListener(handler);
 		btnEdit.setBounds(10, 20, 89, 23);
 		contentPane.add(btnEdit);
 		
 		btnSave = new JButton("Save");
+		btnSave.setFont(new Font("Dotum", Font.PLAIN, 11));
+		btnSave.setToolTipText("Saves changes made to the current note.  Don't worry, if you forget to click save, the note will be saved automatically.");
 		btnSave.addActionListener(handler);
 		btnSave.setEnabled(false);
 		btnSave.setBounds(10, 450, 89, 23);
 		contentPane.add(btnSave);
 		
 		btnClose = new JButton("Save and Exit");
+		btnClose.setFont(new Font("Dotum", Font.PLAIN, 11));
+		btnClose.setToolTipText("U sur u wan do that bro?");
 		btnClose.addActionListener(handler);
-		btnClose.setBounds(699, 401, 105, 72);
+		btnClose.setBounds(693, 401, 111, 82);
 		contentPane.add(btnClose);
 		
 		lblSmartwaterNotes = new JLabel("SmartWater Notes");
-		lblSmartwaterNotes.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblSmartwaterNotes.setBounds(306, 11, 147, 18);
+		lblSmartwaterNotes.setFont(new Font("Lucida Handwriting", Font.BOLD, 16));
+		lblSmartwaterNotes.setBounds(290, 11, 195, 18);
 		contentPane.add(lblSmartwaterNotes);
 		
 		noteViewPanel = new JPanel();
 		noteViewPanel.setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
-		noteViewPanel.setBounds(10, 53, 478, 386);
+		noteViewPanel.setBounds(10, 53, 433, 386);
 		contentPane.add(noteViewPanel);
 		noteViewPanel.setLayout(null);
 		
 		titelBorderPanel = new JPanel();
-		titelBorderPanel.setBorder(new TitledBorder(null, "Note Title", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		titelBorderPanel.setBounds(24, 14, 429, 51);
+		titelBorderPanel.setBorder(new TitledBorder(null, "Title", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		titelBorderPanel.setBounds(24, 14, 331, 51);
 		noteViewPanel.add(titelBorderPanel);
 		titelBorderPanel.setLayout(null);
 		
 		noteTitleTextPane = new JTextPane();
+		noteTitleTextPane.setFont(new Font("Dotum", Font.PLAIN, 11));
+		noteTitleTextPane.setToolTipText("Enter a title for your note.");
 		noteTitleTextPane.setEditable(false);
-		noteTitleTextPane.setBounds(10, 16, 409, 24);
+		noteTitleTextPane.setBounds(10, 16, 311, 24);
 		titelBorderPanel.add(noteTitleTextPane);
 		noteTitleTextPane.setBackground(SystemColor.controlHighlight);
 		
 		JPanel dateBorderPanel = new JPanel();
-		dateBorderPanel.setBorder(new TitledBorder(null, "Note Date", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		dateBorderPanel.setBounds(24, 76, 429, 51);
+		dateBorderPanel.setBorder(new TitledBorder(null, "Date", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		dateBorderPanel.setBounds(24, 76, 331, 51);
 		noteViewPanel.add(dateBorderPanel);
 		dateBorderPanel.setLayout(null);
 		
 		noteDateTextPane = new JTextPane();
+		noteDateTextPane.setFont(new Font("Dotum", Font.PLAIN, 11));
 		noteDateTextPane.setEditable(false);
 		noteDateTextPane.setBackground(SystemColor.controlHighlight);
-		noteDateTextPane.setBounds(10, 16, 409, 24);
+		noteDateTextPane.setBounds(10, 16, 311, 24);
 		dateBorderPanel.add(noteDateTextPane);
 		
 		descriptionBorderPanel = new JPanel();
-		descriptionBorderPanel.setBorder(new TitledBorder(null, "Note Description", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		descriptionBorderPanel.setBounds(24, 187, 429, 194);
+		descriptionBorderPanel.setBorder(new TitledBorder(null, "Description", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		descriptionBorderPanel.setBounds(24, 187, 399, 194);
 		noteViewPanel.add(descriptionBorderPanel);
 		descriptionBorderPanel.setLayout(null);
 		
 		noteDescriptionTextPane = new JTextPane();
+		noteDescriptionTextPane.setFont(new Font("Dotum", Font.PLAIN, 11));
+		noteDescriptionTextPane.setToolTipText("Enter a description for your note by selecting a current note and clicking \"Edit\" or by creating a \"New Note\"");
 		noteDescriptionTextPane.setEditable(false);
-		noteDescriptionTextPane.setBounds(10, 16, 301, 169);
+		noteDescriptionTextPane.setBounds(10, 16, 273, 169);
 		descriptionBorderPanel.add(noteDescriptionTextPane);
 		noteDescriptionTextPane.setBackground(SystemColor.controlHighlight);
 		
 		
 		noteTagScrollPane = new JScrollPane();
-		noteTagScrollPane.setBounds(321, 16, 96, 169);
+		noteTagScrollPane.setBounds(293, 16, 96, 169);
 		descriptionBorderPanel.add(noteTagScrollPane);
 		currentTagModelList = new DefaultListModel<String>();
 		currentTagJList = new JList();
+		currentTagJList.setBackground(SystemColor.controlHighlight);
 		currentTagJList.setModel(currentTagModelList);
-		noteTagScrollPane.setViewportView(currentTagJList);
+		noteTagScrollPane.setRowHeaderView(currentTagJList);
 	
 		
 		tagPanel = new JPanel();
@@ -332,6 +349,8 @@ public class NoteSystemMainWindow extends JFrame {
 		tagPanel.setLayout(null);
 		
 		noteTagTextField = new JTextField();
+		noteTagTextField.setFont(new Font("Dotum", Font.PLAIN, 11));
+		noteTagTextField.setToolTipText("Enter a tag for your note and select \"Add Tag\".  When you save your note, the new tag will appear in the tag window to the right.");
 		noteTagTextField.setBounds(10, 16, 115, 24);
 		tagPanel.add(noteTagTextField);
 		noteTagTextField.setBackground(SystemColor.controlHighlight);
@@ -339,24 +358,28 @@ public class NoteSystemMainWindow extends JFrame {
 		noteTagTextField.setEditable(false);
 		
 		btnAddTag = new JButton("Add Tag");
+		btnAddTag.setFont(new Font("Dotum", Font.PLAIN, 11));
 		btnAddTag.addActionListener(handler);
-		btnAddTag.setBounds(164, 145, 89, 23);
+		btnAddTag.setBounds(164, 145, 93, 23);
 		noteViewPanel.add(btnAddTag);
 		btnAddTag.setEnabled(false);
 		
 		btnRemoveTag = new JButton("Remove Tag");
+		btnRemoveTag.setFont(new Font("Dotum", Font.PLAIN, 11));
 		btnRemoveTag.addActionListener(handler);
-		btnRemoveTag.setBounds(345, 145, 93, 23);
+		btnRemoveTag.setBounds(311, 145, 101, 23);
 		noteViewPanel.add(btnRemoveTag);
 		btnRemoveTag.setEnabled(false);
 		
 		noteScrollPane = new JScrollPane();
-		noteScrollPane.setBounds(510, 53, 173, 386);
+		noteScrollPane.setBounds(453, 53, 230, 386);
 		contentPane.add(noteScrollPane);
 		
 		
 		noteListModel = new NoteListModel(noteSystem);
 		noteJList = new JList();
+		noteJList.setFont(new Font("SimHei", Font.PLAIN, 14));
+		noteJList.setToolTipText("This view contains your current notes.  Select a note to view it's contents.  Press \"Edit\" to modify the contents.");
 		noteJList.addMouseListener(mouseHandler);
 		noteJList.setModel(noteListModel);
 		noteScrollPane.setViewportView(noteJList);
@@ -369,6 +392,7 @@ public class NoteSystemMainWindow extends JFrame {
 		
 		tagListModel = new TagListModel(noteSystem);
 		tagJList = new JList();
+		tagJList.setFont(new Font("SimHei", Font.PLAIN, 13));
 		tagJList.addMouseListener(mouseHandler);
 		tagJList.setModel(tagListModel);
 		tagScrollPane.setViewportView(tagJList);
@@ -376,6 +400,8 @@ public class NoteSystemMainWindow extends JFrame {
 		tagJList.setBackground(SystemColor.control);
 		
 		btnClear = new JButton("Clear");
+		btnClear.setFont(new Font("Dotum", Font.PLAIN, 11));
+		btnClear.setToolTipText("Go back to your full note and tag list.");
 		btnClear.addActionListener(handler);
 		btnClear.setBounds(703, 53, 89, 23);
 		contentPane.add(btnClear);
