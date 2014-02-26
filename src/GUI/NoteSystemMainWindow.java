@@ -297,7 +297,7 @@ public class NoteSystemMainWindow extends JFrame {
 		titelBorderPanel.setLayout(null);
 		
 		noteTitleTextPane = new JTextPane();
-		noteTitleTextPane.setFont(new Font("Dotum", Font.PLAIN, 11));
+		noteTitleTextPane.setFont(new Font("Dotum", Font.PLAIN, 12));
 		noteTitleTextPane.setToolTipText("Enter a title for your note.");
 		noteTitleTextPane.setEditable(false);
 		noteTitleTextPane.setBounds(10, 16, 311, 24);
@@ -311,7 +311,7 @@ public class NoteSystemMainWindow extends JFrame {
 		dateBorderPanel.setLayout(null);
 		
 		noteDateTextPane = new JTextPane();
-		noteDateTextPane.setFont(new Font("Dotum", Font.PLAIN, 11));
+		noteDateTextPane.setFont(new Font("Dotum", Font.PLAIN, 12));
 		noteDateTextPane.setEditable(false);
 		noteDateTextPane.setBackground(SystemColor.controlHighlight);
 		noteDateTextPane.setBounds(10, 16, 311, 24);
@@ -324,7 +324,7 @@ public class NoteSystemMainWindow extends JFrame {
 		descriptionBorderPanel.setLayout(null);
 		
 		noteDescriptionTextPane = new JTextPane();
-		noteDescriptionTextPane.setFont(new Font("Dotum", Font.PLAIN, 11));
+		noteDescriptionTextPane.setFont(new Font("Dotum", Font.PLAIN, 12));
 		noteDescriptionTextPane.setToolTipText("Enter a description for your note by selecting a current note and clicking \"Edit\" or by creating a \"New Note\"");
 		noteDescriptionTextPane.setEditable(false);
 		noteDescriptionTextPane.setBounds(10, 16, 273, 169);
@@ -337,6 +337,7 @@ public class NoteSystemMainWindow extends JFrame {
 		descriptionBorderPanel.add(noteTagScrollPane);
 		currentTagModelList = new DefaultListModel<String>();
 		currentTagJList = new JList();
+		currentTagJList.setFont(new Font("Dotum", Font.PLAIN, 12));
 		currentTagJList.setBackground(SystemColor.controlHighlight);
 		currentTagJList.setModel(currentTagModelList);
 		noteTagScrollPane.setRowHeaderView(currentTagJList);
@@ -349,7 +350,7 @@ public class NoteSystemMainWindow extends JFrame {
 		tagPanel.setLayout(null);
 		
 		noteTagTextField = new JTextField();
-		noteTagTextField.setFont(new Font("Dotum", Font.PLAIN, 11));
+		noteTagTextField.setFont(new Font("Dotum", Font.PLAIN, 12));
 		noteTagTextField.setToolTipText("Enter a tag for your note and select \"Add Tag\".  When you save your note, the new tag will appear in the tag window to the right.");
 		noteTagTextField.setBounds(10, 16, 115, 24);
 		tagPanel.add(noteTagTextField);
