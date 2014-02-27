@@ -74,17 +74,32 @@ public class NoteSystem
 	/**
 	 * Populates the Tag list based on the current Note List.
 	 */
-	private  void populateTagsList( )
-	{
+	private void populateTagsList( )
+	{		
+		if( !m_TagsList.isEmpty( ) )
+			m_TagsList.clear( );
+		
 		for( Note nIndex : m_NotesList )
+			populateTagsByNote( nIndex, nIndex.getTags( ) );
+	}
+	
+	/**
+	 * Helper Function to add the note to specified tags that don't already contain the note.
+	 * 
+	 * @param nNoteToPopulateFrom	Note to add to Tags
+	 * @param sListOfTags			List of Tags to create or add the note to.
+	 */
+	private void populateTagsByNote( Note nNoteToPopulateFrom, ArrayList< String > sListOfTags )
+	{
+		Tag tTagPtr = null;
+		
+		for( String sIndex : sListOfTags )
 		{
-			for( String sIndex : nIndex.getTags( ) )
-			{
-				if( m_TagsList.contains( sIndex ) )
-					m_TagsList.get( m_TagsList.indexOf( sIndex ) ).addNote( nIndex );
-				else
-					m_TagsList.add( new Tag( sIndex, nIndex ) );
-			}
+			tTagPtr = getTagByValue( sIndex );
+			if( null != tTagPtr && !tTagPtr.getAdjacentNotes( ).contains( nNoteToPopulateFrom ) )
+				tTagPtr.addNote( nNoteToPopulateFrom );
+			else
+				m_TagsList.add( new Tag( sIndex, nNoteToPopulateFrom ) );
 		}
 	}
 	
@@ -111,15 +126,16 @@ public class NoteSystem
 				m_NoteTags.remove( tIndex.getTag( ) );
 		}
 		
+		populateTagsByNote( nNoteToUpdate, m_NoteTags );
 		
-		for( String sIndex : m_NoteTags )
+		/*for( String sIndex : m_NoteTags )
 		{
 			m_ReferenceTag = getTagByValue( sIndex );
 			if( m_ReferenceTag != null )
 				m_ReferenceTag.addNote( nNoteToUpdate );
 			else
 				m_TagsList.add( new Tag( sIndex, nNoteToUpdate ) );
-		}
+		}*/
 	}
 	
 	/**
@@ -244,7 +260,7 @@ public class NoteSystem
 		ArrayList< Tag > alReturnList = new ArrayList< Tag >( );
 		
 		for( Tag tIndex : m_TagsList )
-			if( tIndex.getTag( ).startsWith( sKeyWord ) )
+			if( tIndex.getTag( ).toLowerCase( ).startsWith( sKeyWord.toLowerCase( ) ) )
 				alReturnList.add( tIndex );
 		
 		return quickSort( alReturnList );
