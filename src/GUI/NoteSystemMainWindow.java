@@ -435,7 +435,7 @@ public class NoteSystemMainWindow extends JFrame {
 		
 		noteViewPanel = new JPanel();
 		noteViewPanel.setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
-		noteViewPanel.setBounds(10, 53, 433, 386);
+		noteViewPanel.setBounds(20, 54, 433, 386);
 		contentPane.add(noteViewPanel);
 		noteViewPanel.setLayout(null);
 		
@@ -490,7 +490,7 @@ public class NoteSystemMainWindow extends JFrame {
 		currentTagJList.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		currentTagJList.setBackground(SystemColor.controlHighlight);
 		currentTagJList.setModel(currentTagModelList);
-		noteTagScrollPane.setRowHeaderView(currentTagJList);
+		noteTagScrollPane.setViewportView(currentTagJList);
 		
 		tagPanel = new JPanel();
 		tagPanel.setBorder(new TitledBorder(null, "Add Tag", TitledBorder.LEADING, TitledBorder.TOP, null, null));
