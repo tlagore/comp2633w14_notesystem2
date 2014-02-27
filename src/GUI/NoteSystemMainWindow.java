@@ -30,12 +30,12 @@ public class NoteSystemMainWindow extends JFrame {
 	private Note currentNote;
 	private NoteSystem noteSystem;
 
-	private JTextField tagTextField;
+	private JTextField tagTextField, noteTitleTextField;
 	private JButton btnRemove, btnNewNote, btnEdit, btnSave, btnAddTag, btnClose,
 					btnRemoveTag, btnClear;
 	private JPanel noteViewPanel, titelBorderPanel,  descriptionBorderPanel,
 					searchByTagBorder, tagPanel, contentPane;
-	private JTextPane noteDateTextPane, noteTitleTextPane, noteDescriptionTextPane;
+	private JTextPane noteDateTextPane, noteDescriptionTextPane;
 	private JLabel lblSmartwaterNotes;
 	
 	private JList<Note> noteJList;
@@ -260,13 +260,13 @@ public class NoteSystemMainWindow extends JFrame {
 		btnSave.setEnabled					(enable);
 		btnAddTag.setEnabled				(enable);
 		btnRemoveTag.setEnabled				(enable);
-		noteTitleTextPane.setEditable		(enable);
+		noteTitleTextField.setEditable		(enable);
 		noteDescriptionTextPane.setEditable	(enable);
 		noteTagTextField.setEditable		(enable);
 		
 		noteTagTextField.setBackground(color);
 		noteDescriptionTextPane.setBackground(color);
-		noteTitleTextPane.setBackground(color);
+		noteTitleTextField.setBackground(color);
 		currentTagJList.setBackground(color);
 		
 	}
@@ -278,7 +278,7 @@ public class NoteSystemMainWindow extends JFrame {
 	 */
 	private void updateFields()
 	{
-		noteTitleTextPane.setText(currentNote.getTitle());
+		noteTitleTextField.setText(currentNote.getTitle());
 		
 		oldTitle = currentNote.getTitle();
 		
@@ -300,7 +300,7 @@ public class NoteSystemMainWindow extends JFrame {
 		currentNote.setDesc(noteDescriptionTextPane.getText());
 		currentNote.updateDate();	
 	
-		noteListModel.updateNote(currentNote, noteTitleTextPane.getText(), oldTitle);
+		noteListModel.updateNote(currentNote, noteTitleTextField.getText(), oldTitle);
 		
 		updateFields();
 		tagListModel.fireChange();
@@ -445,14 +445,14 @@ public class NoteSystemMainWindow extends JFrame {
 		noteViewPanel.add(titelBorderPanel);
 		titelBorderPanel.setLayout(null);
 		
-		noteTitleTextPane = new JTextPane();
-		noteTitleTextPane.addKeyListener(keyHandler);
-		noteTitleTextPane.setFont(new Font("Dotum", Font.PLAIN, 12));
-		noteTitleTextPane.setToolTipText("Enter a title for your note.");
-		noteTitleTextPane.setEditable(false);
-		noteTitleTextPane.setBounds(10, 16, 311, 24);
-		titelBorderPanel.add(noteTitleTextPane);
-		noteTitleTextPane.setBackground(SystemColor.controlHighlight);
+		noteTitleTextField = new JTextField();
+		noteTitleTextField.addKeyListener(keyHandler);
+		noteTitleTextField.setFont(new Font("Dotum", Font.PLAIN, 12));
+		noteTitleTextField.setToolTipText("Enter a title for your note.");
+		noteTitleTextField.setEditable(false);
+		noteTitleTextField.setBounds(10, 16, 311, 24);
+		titelBorderPanel.add(noteTitleTextField);
+		noteTitleTextField.setBackground(SystemColor.controlHighlight);
 		
 		JPanel dateBorderPanel = new JPanel();
 		dateBorderPanel.setBorder(new TitledBorder(null, "Date", TitledBorder.LEADING, TitledBorder.TOP, null, null));
