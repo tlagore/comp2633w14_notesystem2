@@ -18,6 +18,9 @@ public class Tag extends SortableNoteTag
 	private ArrayList< Note > m_AdjacentNotes;
 	private String m_sValue;
 	
+	// Constants
+	private static final int MAX_TAG_WIDTH = 13;
+	
 	/**
 	 * Default Constructor requires a value for the tag and a starting note.
 	 * 
@@ -110,7 +113,7 @@ public class Tag extends SortableNoteTag
     public int compareTo( SortableNoteTag ntRHS )
     {
 	    Tag tRHS = (Tag) ntRHS;
-		return this.m_sValue.compareToIgnoreCase( tRHS.m_sValue );
+		return -(this.m_sValue.compareToIgnoreCase( tRHS.m_sValue ));
     }
 	
 	/**
@@ -119,7 +122,10 @@ public class Tag extends SortableNoteTag
 	@Override
 	public String toString( )
 	{
-		return m_sValue;
+		String sFormatString = "%-" + String.valueOf( MAX_TAG_WIDTH ) + "s";
+		String sAmendedString = m_sValue.length( ) >= MAX_TAG_WIDTH ? m_sValue.substring( 0, MAX_TAG_WIDTH - 3 ) + "..." : m_sValue;
+		
+		return String.format( sFormatString, sAmendedString );
 	}
 
 }

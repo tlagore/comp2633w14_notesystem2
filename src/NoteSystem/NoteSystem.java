@@ -83,6 +83,8 @@ public class NoteSystem
 		
 		for( Note nIndex : m_NotesList )
 			populateTagsByNote( nIndex, nIndex.getTags( ) );
+		
+		m_TagsList = quickSort( m_TagsList );
 	}
 	
 	/**
