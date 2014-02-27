@@ -30,11 +30,16 @@ public class NoteListModel extends AbstractListModel<Note>
 	 * 
 	 * @return newNote - The note being created
 	 */
-	public Note loadNewNote()
+	public Note loadNewNote(List<Tag> selectedTags)
 	{
 		Note newNote = null;
 		
 		newNote = noteSystem.loadNewNote();
+		
+		if (selectedTags.size() > 0)
+			for (Tag t : selectedTags)
+				newNote.addTag(t.getTag());
+		
 		fireChange();
 		
 		return newNote;
@@ -117,12 +122,8 @@ public class NoteListModel extends AbstractListModel<Note>
 	 */
 	public void sortByTag(String tag)
 	{
-		if (tag.length() > 0)
-		{
-			noteList = noteSystem.getFilteredNotes(tag);
-			fireContentsChanged(this, 0, noteList.size() - 1);
-		}else
-			clearTagField();
+		noteList = noteSystem.getFilteredNotes(tag);
+		fireContentsChanged(this, 0, noteList.size() - 1);
 	}
 	
 	/**

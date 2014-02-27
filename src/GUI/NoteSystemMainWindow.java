@@ -34,7 +34,7 @@ public class NoteSystemMainWindow extends JFrame {
 
 	private JTextField tagTextField, noteTitleTextField;
 	private JButton btnRemove, btnNewNote, btnEdit, btnSave, btnAddTag, btnClose,
-					btnRemoveTag, btnClear;
+					btnRemoveTag, btnClear, btnDiscard;
 	private JPanel noteViewPanel, titelBorderPanel,  descriptionBorderPanel,
 					searchByTagBorder, tagPanel, contentPane;
 	private JTextPane noteDateTextPane, noteDescriptionTextPane;
@@ -48,7 +48,6 @@ public class NoteSystemMainWindow extends JFrame {
 	private JScrollPane noteScrollPane, tagScrollPane, noteTagScrollPane;
 	
 	private String oldTitle;
-
 	
 	//-----------------------------INNER CLASSES----------------------------//
 	//		Purpose:  Handles actions that are performed via the GUI		//
@@ -79,14 +78,16 @@ public class NoteSystemMainWindow extends JFrame {
 			 */
 			if (e.getSource().equals(noteJList))
 			{				
-				if (noteListModel.getElementAt(noteJList.getSelectedIndex()) != currentNote)
+				if (noteListModel.getElementAt(noteJList.getSelectedIndex()) != currentNote && noteJList.getSelectedValuesList().size() == 1)
 				{
 					if (checkIfChanged() && getYesNo(parent, "Would you like to save the current note before changing notes?", 
 												"Save Note?") == 0)
 							saveNote();
 
 					changeNote();
-				}
+				}else
+					editable(false);
+				
 			}else if (e.getSource().equals(tagJList))
 			{
 				if (tagListModel.getSize() > 0)
@@ -125,18 +126,14 @@ public class NoteSystemMainWindow extends JFrame {
 		public void keyReleased(KeyEvent e){
 			if (e.getSource().equals(tagTextField))
 			{
-				tagListModel.sortByTag(tagTextField.getText());
-				noteListModel.sortByTag(tagTextField.getText());
+				sortBothByTag();
 			}
 			else if (e.getSource().equals(noteJList))
-			{
 				if (noteListModel.getElementAt(noteJList.getSelectedIndex()) != currentNote)
 					changeNote();
-				
-			}else if (e.getSource().equals(tagJList))
-			{
+
+			else if (e.getSource().equals(tagJList))
 					tagChanged();
-			}
 			
 		}
 		@Override
@@ -181,6 +178,15 @@ public class NoteSystemMainWindow extends JFrame {
 			
 			else if (e.getSource().equals(btnClose))
 				closeSelected();
+			
+			else if (e.getSource().equals(btnDiscard))
+			{
+				removeNote();
+				changeNote();
+				editable(false);
+				sortBothByTag();
+			}
+				
 		}
 		
 		/**
@@ -194,12 +200,14 @@ public class NoteSystemMainWindow extends JFrame {
 				noteListModel.removeNote(note);		
 			
 			if (noteListModel.getSize() == 0)
-			{
-				currentNote = noteListModel.loadNewNote();
-				editable(true);
-			}
+				newNote();
 			else
+			{
 				currentNote = noteListModel.getElementAt(0);
+				editable(false);	
+			}
+			
+			noteJList.setSelectedIndex(0);
 			
 			updateFields();
 			tagListModel.fireChange();
@@ -207,14 +215,19 @@ public class NoteSystemMainWindow extends JFrame {
 		
 		private void newNote()
 		{
-			currentNote = noteListModel.loadNewNote();
+			List<Tag> selectedTags = tagJList.getSelectedValuesList();
+			
+			currentNote = noteListModel.loadNewNote(selectedTags);
+				
+			sortBothByTag();
 			updateFields();
+			btnDiscard.setEnabled(true);
 			editable(true);
 		}
 		
 		private void addTag()
 		{
-			currentTagModelList.addElement(noteTagTextField.getText());
+			currentTagModelList.addElement(noteTagTextField.getText().toLowerCase());
 			noteTagTextField.setText("");
 		}
 		
@@ -224,16 +237,6 @@ public class NoteSystemMainWindow extends JFrame {
 			
 			for (String t : selectedTags)
 				currentTagModelList.removeElement(t);
-		}
-		
-		private void clearTagField()
-		{
-			tagListModel.clearTagField();
-			noteListModel.clearTagField();
-			tagTextField.setText("");
-			
-			noteJList.setSelectedIndex(0);
-			changeNote();
 		}
 		
 		private void closeSelected()
@@ -265,6 +268,36 @@ public class NoteSystemMainWindow extends JFrame {
 				}
 			}
 		});
+	}
+	
+	public void sortBothByTag()
+	{
+		String tag = tagTextField.getText();
+		String selectedTag = "";
+		
+		if (tag.length() > 0)
+		{
+			tagListModel.sortByTag(tag);
+			noteListModel.sortByTag(tag);
+		}else if (tagJList.getSelectedIndex() != -1)
+		{
+			selectedTag = tagJList.getSelectedValue().getTag();
+			
+			tagListModel.sortByTag(selectedTag);
+			noteListModel.sortByTag(selectedTag);
+		}
+	}
+	
+	public void clearTagField()
+	{
+		tagListModel.clearTagField();
+		noteListModel.clearTagField();
+		tagTextField.setText("");
+		
+		tagJList.clearSelection();
+		
+		noteJList.setSelectedIndex(0);
+		changeNote();
 	}
 	
 	public void tagChanged()
@@ -300,6 +333,9 @@ public class NoteSystemMainWindow extends JFrame {
 	
 	private void editable(boolean enable)
 	{
+		if (noteJList.getSelectedValuesList().size() > 1)
+			enable = false;
+		
 		Color color = enable ? new Color(240,248,255) : SystemColor.controlHighlight;
 		
 		btnEdit.setEnabled					(!enable);
@@ -319,7 +355,8 @@ public class NoteSystemMainWindow extends JFrame {
 		{
 			noteTitleTextField.grabFocus();
 			noteTitleTextField.selectAll();
-		}
+		}else
+			btnDiscard.setEnabled(false);
 		
 	}
 	
@@ -352,14 +389,29 @@ public class NoteSystemMainWindow extends JFrame {
 		currentNote.setDesc(noteDescriptionTextPane.getText());
 		currentNote.updateDate();	
 		
-		ArrayList<String> noteTags = currentNote.getTags();
+		ArrayList<String> noteTags = new ArrayList<String>();
+		String sCurr = "";
+		
+		noteTags.addAll(currentNote.getTags());
 		
 		for (int i = 0; i < currentTagModelList.getSize(); i++)
-			if (!noteTags.contains(currentTagModelList.getElementAt(i)))
-				currentNote.addTag(currentTagModelList.getElementAt(i));
+		{
+			sCurr = currentTagModelList.getElementAt( i );
+			
+			if (!noteTags.contains( sCurr ))
+				currentNote.addTag( sCurr );
+			
+			noteTags.remove( sCurr );
+		}
+		
+		for( String sIndex : noteTags )
+			currentNote.removeTag( sIndex );
 	
 		noteListModel.updateNote(currentNote, noteTitleTextField.getText(), oldTitle);
+		sortBothByTag();
 		changeNote();
+
+		editable(false);
 		
 		tagListModel.fireChange();
 	}
@@ -622,8 +674,15 @@ public class NoteSystemMainWindow extends JFrame {
 		btnClear.setBounds(703, 53, 89, 23);
 		contentPane.add(btnClear);
 		
-		noteJList.setSelectedIndex(0);
+		btnDiscard = new JButton("Discard");
+		btnDiscard.addActionListener(handler);
+		btnDiscard.setFont(new Font("Dotum", Font.PLAIN, 11));
+		btnDiscard.setEnabled(false);
+		btnDiscard.setBounds(364, 450, 89, 23);
+		contentPane.add(btnDiscard);
 		updateFields();
 		loadCurrentTags();
+		
+		noteJList.setSelectedIndex(0);
 	}
 }
