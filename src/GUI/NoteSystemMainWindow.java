@@ -47,8 +47,6 @@ public class NoteSystemMainWindow extends JFrame {
 	
 	private String oldTitle;
 	private boolean noteChanged;
-	
-
 
 	
 	//-----------------------------INNER CLASSES----------------------------//
@@ -73,30 +71,26 @@ public class NoteSystemMainWindow extends JFrame {
 		@Override
 		public void mouseClicked(MouseEvent e) 
 		{
+			/**
+			 * When a mouse click is registered while the mouse is in the note J List, a check is done to see if the note 
+			 * is changed. If it has been, it means it was not saved before changing notes.  A prompt is displayed
+			 * to ask if the user wants to save or not.  After answering, the the selected note is displayed.
+			 */
 			if (e.getSource().equals(noteJList))
 			{				
-				if (noteChanged)
+				if (noteListModel.getElementAt(noteJList.getSelectedIndex()) != currentNote)
 				{
-					/*ConfirmChangeNote changeWindow = new ConfirmChangeNote();
-					changeWindow.run(parent);*/
-					
-					Object[] options = {"Yes", "No"};
-					int n = JOptionPane.showOptionDialog(parent, "Would you like to save the note before changing notes?", "Save Note?", 
-																	JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, 
-																	options, options[0]);
-					
-					if (n == 0)
-						saveNote();
-				}
-				
-				editable(false);
+					if (checkIfChanged() && getYesNo(parent, "Would you like to save the current note before changing notes?", 
+												"Save Note?") == 0)
+							saveNote();
 
-				currentNote = noteListModel.getElementAt(noteJList.getSelectedIndex());
-				updateFields();
+					changeNote();
+				}
 			}else if (e.getSource().equals(tagJList))
 			{
-				noteListModel.sortByTag(tagJList.getSelectedValue().getTag());
+				tagChanged();
 			}
+	
 		}
 
 		@Override
@@ -132,12 +126,19 @@ public class NoteSystemMainWindow extends JFrame {
 				tagListModel.sortByTag(tagTextField.getText());
 				noteListModel.sortByTag(tagTextField.getText());
 			}
+			else if (e.getSource().equals(noteJList))
+			{
+				if (noteListModel.getElementAt(noteJList.getSelectedIndex()) != currentNote)
+					changeNote();
+				
+			}else if (e.getSource().equals(tagJList))
+			{
+					tagChanged();
+			}
+			
 		}
 		@Override
-		public void keyTyped(KeyEvent e) 
-		{
-			noteChanged = true;
-		}
+		public void keyTyped(KeyEvent e) {}
 	}
 	/**
 	 * Handles all action listening for connected buttons.
@@ -153,71 +154,92 @@ public class NoteSystemMainWindow extends JFrame {
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			
+		public void actionPerformed(ActionEvent e) 
+		{	
 			if (e.getSource().equals(btnEdit)) 
 					editable(true);
 			
 			else if (e.getSource().equals(btnRemove)) 
-			{
-				List<Note> selected = noteJList.getSelectedValuesList();
-				
-				for (Note note : selected)
-					noteListModel.removeNote(note);		
-				
-				if (noteListModel.getSize() == 0)
-				{
-					currentNote = noteListModel.loadNewNote();
-					noteChanged = false;
-					editable(true);
-				}
-				else
-					currentNote = noteListModel.getElementAt(0);
-				
-				updateFields();
-				tagListModel.fireChange();
-				
-			} else if (e.getSource().equals(btnSave))
-			{
+				removeNote();
+			
+			else if (e.getSource().equals(btnSave))
 				saveNote();
-				editable(false);
-				
-			} else if (e.getSource().equals(btnNewNote))
+			
+			else if (e.getSource().equals(btnNewNote))
+				newNote();
+			
+			else if (e.getSource().equals(btnAddTag))
+				addTag();
+			
+			else if (e.getSource().equals(btnRemoveTag))
+				removeTags();
+			
+			else if (e.getSource().equals(btnClear))
+				clearTagField();
+			
+			else if (e.getSource().equals(btnClose))
+				closeSelected();
+		}
+		
+		/**
+		 * Removes the selected notes from the list
+		 */
+		private void removeNote()
+		{
+			List<Note> selected = noteJList.getSelectedValuesList();
+			
+			for (Note note : selected)
+				noteListModel.removeNote(note);		
+			
+			if (noteListModel.getSize() == 0)
 			{
 				currentNote = noteListModel.loadNewNote();
-				updateFields();
 				editable(true);
-				
-			} else if (e.getSource().equals(btnAddTag))
-			{
-				currentNote.addTag(noteTagTextField.getText());
-				noteChanged = true;
-				noteTagTextField.setText("");
-				loadCurrentTags();
-				
-			} else if (e.getSource().equals(btnRemoveTag))
-			{
-				List<Tag> selectedTags = tagJList.getSelectedValuesList();
-				
-				for (Tag t : selectedTags)
-				{
-					currentNote.removeTag(t.getTag());
-				}
-				
-				noteChanged = true;
-				loadCurrentTags();
-			} else if (e.getSource().equals(btnClear))
-			{
-				tagListModel.clearTagField();
-				noteListModel.clearTagField();
-				tagTextField.setText("");
-			} else if (e.getSource().equals(btnClose))
-			{
-				ConfirmCloseWindow cWindow = new ConfirmCloseWindow();
-				
-				btnClose.setEnabled(false);
-			 	cWindow.run(parent);
 			}
+			else
+				currentNote = noteListModel.getElementAt(0);
+			
+			updateFields();
+			tagListModel.fireChange();
+		}
+		
+		private void newNote()
+		{
+			currentNote = noteListModel.loadNewNote();
+			updateFields();
+			editable(true);
+		}
+		
+		private void addTag()
+		{
+			currentTagModelList.addElement(noteTagTextField.getText());
+			noteTagTextField.setText("");
+		}
+		
+		private void removeTags()
+		{
+			List<String> selectedTags = currentTagJList.getSelectedValuesList();
+			
+			for (String t : selectedTags)
+				currentTagModelList.removeElement(t);
+		}
+		
+		private void clearTagField()
+		{
+			tagListModel.clearTagField();
+			noteListModel.clearTagField();
+			tagTextField.setText("");
+			
+			noteJList.setSelectedIndex(0);
+			changeNote();
+		}
+		
+		private void closeSelected()
+		{
+			ConfirmCloseWindow cWindow = new ConfirmCloseWindow();
+			
+			btnClose.setEnabled(false);
+		 	cWindow.run(parent);
 		}
 	}
 	//////////////////////////////////////////////////////////////////////
@@ -242,7 +264,29 @@ public class NoteSystemMainWindow extends JFrame {
 			}
 		});
 	}
+	
+	public void tagChanged()
+	{
+		noteListModel.sortByTag(tagJList.getSelectedValue().getTag());
+		noteJList.setSelectedIndex(0);
+		changeNote();
+	}
+	
+	public boolean checkIfChanged()
+	{	
+		return (!currentNote.getTitle().equals(noteTitleTextField.getText()) ||
+				!currentNote.getDesc().equals(noteDescriptionTextPane.getText()) ||
+				!currentNote.getTags().containsAll(Arrays.asList(currentTagModelList.toArray())));
+	}
 
+	public void changeNote()
+	{
+		editable(false);
+
+		currentNote = noteListModel.getElementAt(noteJList.getSelectedIndex());
+		updateFields();
+	}
+	
 	/**
 	 * Name: editable
 	 * Purpose: Toggles whether certain fields are editable or not based on the boolean
@@ -299,13 +343,17 @@ public class NoteSystemMainWindow extends JFrame {
 		
 		currentNote.setDesc(noteDescriptionTextPane.getText());
 		currentNote.updateDate();	
+		
+		ArrayList<String> noteTags = currentNote.getTags();
+		
+		for (int i = 0; i < currentTagModelList.getSize(); i++)
+			if (!noteTags.contains(currentTagModelList.getElementAt(i)))
+				currentNote.addTag(currentTagModelList.getElementAt(i));
 	
 		noteListModel.updateNote(currentNote, noteTitleTextField.getText(), oldTitle);
+		changeNote();
 		
-		updateFields();
 		tagListModel.fireChange();
-		
-		noteChanged = false;
 	}
 	
 	/**
@@ -342,6 +390,14 @@ public class NoteSystemMainWindow extends JFrame {
 		noteSystem.saveListToXML();
 		setVisible(false);
 		dispose();
+	}
+	
+	private int getYesNo(Component parent, String prompt, String title)
+	{
+		Object[] options = {"Yes", "No"};
+		return JOptionPane.showOptionDialog(parent, prompt, title, 
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, 
+				options, options[0]);
 	}
 	
 	/**
@@ -429,8 +485,9 @@ public class NoteSystemMainWindow extends JFrame {
 		contentPane.add(btnClose);
 		
 		lblSmartwaterNotes = new JLabel("SmartWater Notes");
-		lblSmartwaterNotes.setFont(new Font("Lucida Handwriting", Font.BOLD, 16));
-		lblSmartwaterNotes.setBounds(290, 11, 195, 18);
+		lblSmartwaterNotes.setForeground(new Color(0, 0, 0));
+		lblSmartwaterNotes.setFont(new Font("Lucida Handwriting", Font.BOLD, 18));
+		lblSmartwaterNotes.setBounds(169, 20, 261, 18);
 		contentPane.add(lblSmartwaterNotes);
 		
 		noteViewPanel = new JPanel();
@@ -446,7 +503,6 @@ public class NoteSystemMainWindow extends JFrame {
 		titelBorderPanel.setLayout(null);
 		
 		noteTitleTextField = new JTextField();
-		noteTitleTextField.addKeyListener(keyHandler);
 		noteTitleTextField.setFont(new Font("Dotum", Font.PLAIN, 12));
 		noteTitleTextField.setToolTipText("Enter a title for your note.");
 		noteTitleTextField.setEditable(false);
@@ -463,7 +519,7 @@ public class NoteSystemMainWindow extends JFrame {
 		noteDateTextPane = new JTextPane();
 		noteDateTextPane.setFont(new Font("Dotum", Font.PLAIN, 12));
 		noteDateTextPane.setEditable(false);
-		noteDateTextPane.setBackground(SystemColor.controlHighlight);
+		noteDateTextPane.setBackground(SystemColor.menu);
 		noteDateTextPane.setBounds(10, 16, 311, 24);
 		dateBorderPanel.add(noteDateTextPane);
 		
@@ -474,7 +530,6 @@ public class NoteSystemMainWindow extends JFrame {
 		descriptionBorderPanel.setLayout(null);
 		
 		noteDescriptionTextPane = new JTextPane();
-		noteDescriptionTextPane.addKeyListener(keyHandler);
 		noteDescriptionTextPane.setFont(new Font("Dotum", Font.PLAIN, 12));
 		noteDescriptionTextPane.setToolTipText("Enter a description for your note by selecting a current note and clicking \"Edit\" or by creating a \"New Note\"");
 		noteDescriptionTextPane.setEditable(false);
@@ -522,18 +577,20 @@ public class NoteSystemMainWindow extends JFrame {
 		btnRemoveTag.setEnabled(false);
 		
 		noteScrollPane = new JScrollPane();
-		noteScrollPane.setBounds(453, 53, 230, 386);
+		noteScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		noteScrollPane.setBounds(461, 53, 230, 386);
 		contentPane.add(noteScrollPane);
 		
 		
 		noteListModel = new NoteListModel(noteSystem);
 		noteJList = new JList();
+		noteJList.addKeyListener(keyHandler);
 		noteJList.setFont(new Font("SimHei", Font.PLAIN, 14));
 		noteJList.setToolTipText("This view contains your current notes.  Select a note to view it's contents.  Press \"Edit\" to modify the contents.");
 		noteJList.addMouseListener(mouseHandler);
 		noteJList.setModel(noteListModel);
 		noteScrollPane.setViewportView(noteJList);
-		noteJList.setBorder(new LineBorder(new Color(0, 0, 0)));
+		noteJList.setBorder(null);
 		noteJList.setBackground(SystemColor.control);
 		
 		tagScrollPane = new JScrollPane();
@@ -542,11 +599,12 @@ public class NoteSystemMainWindow extends JFrame {
 		
 		tagListModel = new TagListModel(noteSystem);
 		tagJList = new JList();
+		tagJList.addKeyListener(keyHandler);
 		tagJList.setFont(new Font("SimHei", Font.PLAIN, 13));
 		tagJList.addMouseListener(mouseHandler);
 		tagJList.setModel(tagListModel);
 		tagScrollPane.setViewportView(tagJList);
-		tagJList.setBorder(new LineBorder(new Color(0, 0, 0)));
+		tagJList.setBorder(null);
 		tagJList.setBackground(SystemColor.control);
 		
 		btnClear = new JButton("Clear");
@@ -556,6 +614,7 @@ public class NoteSystemMainWindow extends JFrame {
 		btnClear.setBounds(703, 53, 89, 23);
 		contentPane.add(btnClear);
 		
+		noteJList.setSelectedIndex(0);
 		updateFields();
 		loadCurrentTags();
 	}
