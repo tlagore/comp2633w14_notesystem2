@@ -110,7 +110,7 @@ public class Note extends SortableNoteTag
 	public void addTag( String rTagToAdd ) 			
 	{ 
 		if( !m_sTags.contains( rTagToAdd ) )
-			m_sTags.add( rTagToAdd );
+			m_sTags.add( rTagToAdd.toLowerCase( ) );
 	}
 	public void removeTag( String rTagToRemove )	
 	{
