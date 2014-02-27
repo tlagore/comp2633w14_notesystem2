@@ -70,7 +70,7 @@ public class NoteSystem
         catch(Exception ex) {} 
         
         if( m_NotesList.isEmpty( ) )
-        	loadNewNote( );
+        	loadNewNote( null );
 	}
 	
 	/**
@@ -192,11 +192,17 @@ public class NoteSystem
 	 * Generates and returns a new note that is added to the NotesList.
 	 * @return	The new note that's generated with default parameters.
 	 */
-	public Note loadNewNote( )
+	public Note loadNewNote( List< String > m_sAddedTags )
 	{
 		Note nNewNote = new Note( Calendar.getInstance( ), getUniqueTitle( s_DefaultTitle ), "" );
 		
+		if( null != m_sAddedTags && !m_sAddedTags.isEmpty( ) )
+			for( String sIndex : m_sAddedTags )
+				nNewNote.addTag( sIndex );
+		
 		m_NotesList.add( nNewNote );
+		
+		updateNoteTagConnection( nNewNote );
 		
 		return nNewNote;
 	}

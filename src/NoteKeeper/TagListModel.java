@@ -50,6 +50,17 @@ public class TagListModel extends AbstractListModel<Tag>
 		
 		return tag;		
 	}
+	
+	/**
+	 * Sets the List to be one tag (Tag is passed in).
+	 * @param sTagToSet	Tag to set the list to.
+	 */
+	public void setList( Tag sTagToSet )
+	{
+		tagList = new ArrayList< Tag >( );
+		tagList.add( sTagToSet );
+		fireContentsChanged( this, 0, tagList.size( ) - 1 );
+	}
 
 	/**
 	 * Override for the getSize of an AbstractListModel.  Returns the size of the tagList

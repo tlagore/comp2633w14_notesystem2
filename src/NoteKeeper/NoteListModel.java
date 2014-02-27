@@ -33,12 +33,12 @@ public class NoteListModel extends AbstractListModel<Note>
 	public Note loadNewNote(List<Tag> selectedTags)
 	{
 		Note newNote = null;
+		ArrayList< String > sTags = new ArrayList< String >( );
 		
-		newNote = noteSystem.loadNewNote();
+		for( Tag tIndex : selectedTags )
+			sTags.add( tIndex.getTag( ) );
 		
-		if (selectedTags.size() > 0)
-			for (Tag t : selectedTags)
-				newNote.addTag(t.getTag());
+		newNote = noteSystem.loadNewNote( sTags );
 		
 		fireChange();
 		

@@ -91,7 +91,10 @@ public class NoteSystemMainWindow extends JFrame {
 			}else if (e.getSource().equals(tagJList))
 			{
 				if (tagListModel.getSize() > 0)
+				{
 					tagChanged();
+					//tagListModel.sortByTag( tagJList.getSelectedValue( ).toString( ) );
+				}
 			}
 	
 		}
@@ -275,16 +278,17 @@ public class NoteSystemMainWindow extends JFrame {
 		String tag = tagTextField.getText();
 		String selectedTag = "";
 		
-		if (tag.length() > 0)
-		{
-			tagListModel.sortByTag(tag);
-			noteListModel.sortByTag(tag);
-		}else if (tagJList.getSelectedIndex() != -1)
+		if (tagJList.getSelectedIndex() != -1)
 		{
 			selectedTag = tagJList.getSelectedValue().getTag();
 			
 			tagListModel.sortByTag(selectedTag);
 			noteListModel.sortByTag(selectedTag);
+		}
+		else
+		{
+			tagListModel.sortByTag(tag);
+			noteListModel.sortByTag(tag);
 		}
 	}
 	
@@ -303,7 +307,9 @@ public class NoteSystemMainWindow extends JFrame {
 	public void tagChanged()
 	{
 		noteListModel.sortByTag(tagJList.getSelectedValue().getTag());
+		tagListModel.setList( tagJList.getSelectedValue( ) );
 		noteJList.setSelectedIndex(0);
+		tagJList.setSelectedIndex( 0 );
 		changeNote();
 	}
 	
@@ -389,6 +395,7 @@ public class NoteSystemMainWindow extends JFrame {
 		currentNote.setDesc(noteDescriptionTextPane.getText());
 		currentNote.updateDate();	
 		
+		// Sets the currentNode's tag list to mimic the currentTagModelList.
 		ArrayList<String> noteTags = new ArrayList<String>();
 		String sCurr = "";
 		
@@ -407,13 +414,14 @@ public class NoteSystemMainWindow extends JFrame {
 		for( String sIndex : noteTags )
 			currentNote.removeTag( sIndex );
 	
+		// Save Note
 		noteListModel.updateNote(currentNote, noteTitleTextField.getText(), oldTitle);
-		sortBothByTag();
-		changeNote();
-
-		editable(false);
+		if( tagJList.getSelectedIndex( ) != -1 )
+			noteListModel.sortByTag( tagJList.getSelectedValue( ).getTag( ) );
 		
-		tagListModel.fireChange();
+		// Update List viewing
+		changeNote();
+		//tagListModel.fireChange();
 	}
 	
 	/**
@@ -667,7 +675,7 @@ public class NoteSystemMainWindow extends JFrame {
 		tagJList.setBorder(null);
 		tagJList.setBackground(SystemColor.control);
 		
-		btnClear = new JButton("Clear");
+		btnClear = new JButton("Reset");
 		btnClear.setFont(new Font("Dotum", Font.PLAIN, 11));
 		btnClear.setToolTipText("Go back to your full note and tag list.");
 		btnClear.addActionListener(handler);
