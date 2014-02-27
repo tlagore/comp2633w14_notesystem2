@@ -48,7 +48,6 @@ public class NoteSystemMainWindow extends JFrame {
 	private JScrollPane noteScrollPane, tagScrollPane, noteTagScrollPane;
 	
 	private String oldTitle;
-	private boolean noteChanged;
 
 	
 	//-----------------------------INNER CLASSES----------------------------//
@@ -90,7 +89,8 @@ public class NoteSystemMainWindow extends JFrame {
 				}
 			}else if (e.getSource().equals(tagJList))
 			{
-				tagChanged();
+				if (tagListModel.getSize() > 0)
+					tagChanged();
 			}
 	
 		}
@@ -315,6 +315,12 @@ public class NoteSystemMainWindow extends JFrame {
 		noteTitleTextField.setBackground(color);
 		currentTagJList.setBackground(color);
 		
+		if (enable)
+		{
+			noteTitleTextField.grabFocus();
+			noteTitleTextField.selectAll();
+		}
+		
 	}
 	
 	/**
@@ -418,7 +424,6 @@ public class NoteSystemMainWindow extends JFrame {
 		MainWindowMouseHandlr mouseHandler = new MainWindowMouseHandlr(this);
 		currentNote = note;
 		
-		noteChanged = false;
 		oldTitle = currentNote.getTitle();
 		
 		addWindowListener(new WindowAdapter() {
@@ -481,7 +486,7 @@ public class NoteSystemMainWindow extends JFrame {
 		
 		btnClose = new JButton("Save and Exit");
 		btnClose.setFont(new Font("Dotum", Font.PLAIN, 11));
-		btnClose.setToolTipText("U sur u wan do that bro?");
+		btnClose.setToolTipText("U sur u wan do dat bro?");
 		btnClose.addActionListener(handler);
 		btnClose.setBounds(693, 401, 111, 82);
 		contentPane.add(btnClose);
@@ -540,6 +545,7 @@ public class NoteSystemMainWindow extends JFrame {
 		noteDescriptionTextPane.setBackground(SystemColor.controlHighlight);
 		
 		noteTagScrollPane = new JScrollPane();
+		noteTagScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		noteTagScrollPane.setBounds(293, 16, 96, 169);
 		descriptionBorderPanel.add(noteTagScrollPane);
 		currentTagModelList = new DefaultListModel<String>();
