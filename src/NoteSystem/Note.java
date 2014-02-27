@@ -24,7 +24,7 @@ public class Note extends SortableNoteTag
 	
 	// Constants
 	private static final int PRIME = 11;
-	private static final int COL_WIDTH = 15;
+	private static final int COL_WIDTH = 16;
 	
 	/**
 	 * Default Constructor to generate a new Note.

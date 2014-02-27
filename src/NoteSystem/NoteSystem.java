@@ -111,8 +111,10 @@ public class NoteSystem
 	public void updateNoteTagConnection( Note nNoteToUpdate )
 	{
 		ArrayList< Tag > m_ReferencedTags 	= getLinkedTags( nNoteToUpdate );
-		ArrayList< String > m_NoteTags		= nNoteToUpdate.getTags( );
+		ArrayList< String > m_NoteTags		= new ArrayList< String >( );
 		Tag m_ReferenceTag = null;
+		
+		m_NoteTags.addAll( nNoteToUpdate.getTags( ) );
 		
 		for( Tag tIndex : m_ReferencedTags )
 		{
@@ -127,15 +129,6 @@ public class NoteSystem
 		}
 		
 		populateTagsByNote( nNoteToUpdate, m_NoteTags );
-		
-		/*for( String sIndex : m_NoteTags )
-		{
-			m_ReferenceTag = getTagByValue( sIndex );
-			if( m_ReferenceTag != null )
-				m_ReferenceTag.addNote( nNoteToUpdate );
-			else
-				m_TagsList.add( new Tag( sIndex, nNoteToUpdate ) );
-		}*/
 	}
 	
 	/**
