@@ -120,9 +120,9 @@ public class NoteListModel extends AbstractListModel<Note>
 	 * 
 	 * @param tag the tag to sort the notes by
 	 */
-	public void sortByTag(String tag)
+	public void sortByTag(String tag, boolean bExact)
 	{
-		noteList = noteSystem.getFilteredNotes(tag);
+		noteList = noteSystem.getFilteredNotes(tag, bExact);
 		fireContentsChanged(this, 0, noteList.size() - 1);
 	}
 	

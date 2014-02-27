@@ -239,11 +239,11 @@ public class NoteSystem
 	 * @param sKeyWord	The substring to check tags with.
 	 * @return			Sorted ArrayList with all connected Notes.
 	 */
-	public ArrayList< Note > getFilteredNotes( String sKeyWord )
+	public ArrayList< Note > getFilteredNotes( String sKeyWord, boolean bExact )
 	{
 		ArrayList< Note > alReturnList = new ArrayList< Note >( );
 		
-		for( Tag tIndex : getFilteredTags( sKeyWord ) )
+		for( Tag tIndex : getFilteredTags( sKeyWord, bExact ) )
 			for( Note nIndex : tIndex.getAdjacentNotes( ) )
 				if( !alReturnList.contains( nIndex ) )
 					alReturnList.add( nIndex );
@@ -257,13 +257,18 @@ public class NoteSystem
 	 * @param sKeyWord	The keyword to filter tags with.
 	 * @return			Sorted list of Filtered Tags.
 	 */
-	public ArrayList< Tag > getFilteredTags( String sKeyWord )
+	public ArrayList< Tag > getFilteredTags( String sKeyWord, boolean bExact )
 	{
 		ArrayList< Tag > alReturnList = new ArrayList< Tag >( );
+		String sGrabbedTag = "";
 		
 		for( Tag tIndex : m_TagsList )
-			if( tIndex.getTag( ).toLowerCase( ).startsWith( sKeyWord.toLowerCase( ) ) )
+		{
+			sGrabbedTag = tIndex.getTag( ).toLowerCase( );
+			if( bExact ? sGrabbedTag.equals( sKeyWord.toLowerCase( ) )  
+					   : sGrabbedTag.startsWith( sKeyWord.toLowerCase( ) ) )
 				alReturnList.add( tIndex );
+		}
 		
 		return quickSort( alReturnList );
 	}

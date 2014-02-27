@@ -77,7 +77,7 @@ public class TagListModel extends AbstractListModel<Tag>
 	 */
 	public void sortByTag(String tag) 
 	{
-		tagList = noteSystem.getFilteredTags(tag);
+		tagList = noteSystem.getFilteredTags(tag, false);
 		fireContentsChanged(this, 0, tagList.size() - 1);
 	}
 	/**

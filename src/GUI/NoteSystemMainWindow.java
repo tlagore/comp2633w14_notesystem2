@@ -92,8 +92,8 @@ public class NoteSystemMainWindow extends JFrame {
 			{
 				if (tagListModel.getSize() > 0)
 				{
-					tagChanged();
-					//tagListModel.sortByTag( tagJList.getSelectedValue( ).toString( ) );
+					tagTextField.setText( "" );
+					tagChanged( true );
 				}
 			}
 	
@@ -136,7 +136,7 @@ public class NoteSystemMainWindow extends JFrame {
 					changeNote();
 
 			else if (e.getSource().equals(tagJList))
-					tagChanged();
+					tagChanged( false );
 			
 		}
 		@Override
@@ -221,8 +221,11 @@ public class NoteSystemMainWindow extends JFrame {
 			List<Tag> selectedTags = tagJList.getSelectedValuesList();
 			
 			currentNote = noteListModel.loadNewNote(selectedTags);
-				
-			sortBothByTag();
+			
+			/*tagTextField.setText( "" );
+			sortBothByTag();*/
+			if( !selectedTags.isEmpty( ) )
+				noteListModel.sortByTag( selectedTags.get( 0 ).getTag( ), true );
 			updateFields();
 			btnDiscard.setEnabled(true);
 			editable(true);
@@ -278,17 +281,21 @@ public class NoteSystemMainWindow extends JFrame {
 		String tag = tagTextField.getText();
 		String selectedTag = "";
 		
+		if( tag != "" )
+			tagJList.clearSelection( );
+		
 		if (tagJList.getSelectedIndex() != -1)
 		{
+			clearTagField( );
 			selectedTag = tagJList.getSelectedValue().getTag();
 			
 			tagListModel.sortByTag(selectedTag);
-			noteListModel.sortByTag(selectedTag);
+			noteListModel.sortByTag(selectedTag, false);
 		}
 		else
 		{
 			tagListModel.sortByTag(tag);
-			noteListModel.sortByTag(tag);
+			noteListModel.sortByTag(tag, false);
 		}
 	}
 	
@@ -304,9 +311,9 @@ public class NoteSystemMainWindow extends JFrame {
 		changeNote();
 	}
 	
-	public void tagChanged()
+	public void tagChanged( boolean bExact )
 	{
-		noteListModel.sortByTag(tagJList.getSelectedValue().getTag());
+		noteListModel.sortByTag(tagJList.getSelectedValue().getTag(), bExact);
 		tagListModel.setList( tagJList.getSelectedValue( ) );
 		noteJList.setSelectedIndex(0);
 		tagJList.setSelectedIndex( 0 );
@@ -417,7 +424,7 @@ public class NoteSystemMainWindow extends JFrame {
 		// Save Note
 		noteListModel.updateNote(currentNote, noteTitleTextField.getText(), oldTitle);
 		if( tagJList.getSelectedIndex( ) != -1 )
-			noteListModel.sortByTag( tagJList.getSelectedValue( ).getTag( ) );
+			noteListModel.sortByTag( tagJList.getSelectedValue( ).getTag( ), false );
 		
 		// Update List viewing
 		changeNote();
