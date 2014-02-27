@@ -4,7 +4,6 @@
 package NoteSystem;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 
 /**
  * Tag Entity class:
@@ -75,9 +74,6 @@ public class Tag extends SortableNoteTag
 	 */
 	public ArrayList< Note > getAdjacentNotes( )	{ return m_AdjacentNotes; }
 	public String getTag( ) 						{ return m_sValue; }
-	/*Shouldn't be Needed* 
-	 * public void setTag( String sNewValue ) 	{ m_sValue = sNewValue; }
-	 */
 	
 	/**
 	 * Adds a new note to the adjacency list if the note doesn't already exist in the list.
