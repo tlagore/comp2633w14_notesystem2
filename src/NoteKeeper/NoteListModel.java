@@ -50,9 +50,9 @@ public class NoteListModel extends AbstractListModel<Note>
 	 * @param title the requested title (may change if it is taken)
 	 * @param titleChanged whether or not the title was edited
 	 */
-	public void updateNote(Note note, String title, boolean titleChanged)
+	public void updateNote(Note note, String title, String oldTitle)
 	{
-		if (titleChanged)
+		if (oldTitle.compareTo(title) != 0)
 			note.setTitle(noteSystem.getUniqueTitle(title));
 		
 		noteSystem.updateNoteTagConnection(note);

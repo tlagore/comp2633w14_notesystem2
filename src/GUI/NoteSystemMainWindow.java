@@ -45,7 +45,8 @@ public class NoteSystemMainWindow extends JFrame {
 	private JTextField noteTagTextField;
 	private JScrollPane noteScrollPane, tagScrollPane, noteTagScrollPane;
 	
-	private boolean titleChanged;
+	private String oldTitle;
+	private boolean noteChanged;
 	
 
 
@@ -73,14 +74,22 @@ public class NoteSystemMainWindow extends JFrame {
 		public void mouseClicked(MouseEvent e) 
 		{
 			if (e.getSource().equals(noteJList))
-			{
-				boolean editable = btnEdit.isEnabled();
-
-				if (!editable)
+			{				
+				if (noteChanged)
 				{
-					saveNote();
-					editable(false);
+					/*ConfirmChangeNote changeWindow = new ConfirmChangeNote();
+					changeWindow.run(parent);*/
+					
+					Object[] options = {"Yes", "No"};
+					int n = JOptionPane.showOptionDialog(parent, "Would you like to save the note before changing notes?", "Save Note?", 
+																	JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, 
+																	options, options[0]);
+					
+					if (n == 0)
+						saveNote();
 				}
+				
+				editable(false);
 
 				currentNote = noteListModel.getElementAt(noteJList.getSelectedIndex());
 				updateFields();
@@ -125,10 +134,9 @@ public class NoteSystemMainWindow extends JFrame {
 			}
 		}
 		@Override
-		public void keyTyped(KeyEvent e)
+		public void keyTyped(KeyEvent e) 
 		{
-			if (e.getSource().equals(noteTitleTextPane))
-				titleChanged = true;
+			noteChanged = true;
 		}
 	}
 	/**
@@ -160,6 +168,7 @@ public class NoteSystemMainWindow extends JFrame {
 				if (noteListModel.getSize() == 0)
 				{
 					currentNote = noteListModel.loadNewNote();
+					noteChanged = false;
 					editable(true);
 				}
 				else
@@ -182,6 +191,7 @@ public class NoteSystemMainWindow extends JFrame {
 			} else if (e.getSource().equals(btnAddTag))
 			{
 				currentNote.addTag(noteTagTextField.getText());
+				noteChanged = true;
 				noteTagTextField.setText("");
 				loadCurrentTags();
 				
@@ -194,6 +204,7 @@ public class NoteSystemMainWindow extends JFrame {
 					currentNote.removeTag(t.getTag());
 				}
 				
+				noteChanged = true;
 				loadCurrentTags();
 			} else if (e.getSource().equals(btnClear))
 			{
@@ -210,11 +221,6 @@ public class NoteSystemMainWindow extends JFrame {
 		}
 	}
 	//////////////////////////////////////////////////////////////////////
-	
-	
-	/**
-	 * Create the frame.
-	 */
 
 
 	/**
@@ -273,6 +279,9 @@ public class NoteSystemMainWindow extends JFrame {
 	private void updateFields()
 	{
 		noteTitleTextPane.setText(currentNote.getTitle());
+		
+		oldTitle = currentNote.getTitle();
+		
 		noteDateTextPane.setText(currentNote.getDate());
 		noteDescriptionTextPane.setText(currentNote.getDesc());
 		
@@ -284,19 +293,19 @@ public class NoteSystemMainWindow extends JFrame {
 	 * Purpose: Saves the fields that are currently in the Main Window to the internal
 	 * 			note.  If the title has changed, the title is also saved. 
 	 */
-	private void saveNote() 
+	public void saveNote() 
 	{
 		noteTagTextField.setText("");
 		
 		currentNote.setDesc(noteDescriptionTextPane.getText());
 		currentNote.updateDate();	
 	
-		noteListModel.updateNote(currentNote, noteTitleTextPane.getText(), titleChanged);
+		noteListModel.updateNote(currentNote, noteTitleTextPane.getText(), oldTitle);
 		
 		updateFields();
-		
-		titleChanged = false;
 		tagListModel.fireChange();
+		
+		noteChanged = false;
 	}
 	
 	/**
@@ -345,13 +354,14 @@ public class NoteSystemMainWindow extends JFrame {
 	public NoteSystemMainWindow(NoteSystem noteSystem, Note note)
 	{
 		this.noteSystem = noteSystem;
-		
-		titleChanged = false;
 
 		MainWindowButtonHandlr handler = new MainWindowButtonHandlr(this);
 		MainWindowKeyHandlr keyHandler = new MainWindowKeyHandlr(this);
 		MainWindowMouseHandlr mouseHandler = new MainWindowMouseHandlr(this);
 		currentNote = note;
+		
+		noteChanged = false;
+		oldTitle = currentNote.getTitle();
 		
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -464,13 +474,13 @@ public class NoteSystemMainWindow extends JFrame {
 		descriptionBorderPanel.setLayout(null);
 		
 		noteDescriptionTextPane = new JTextPane();
+		noteDescriptionTextPane.addKeyListener(keyHandler);
 		noteDescriptionTextPane.setFont(new Font("Dotum", Font.PLAIN, 12));
 		noteDescriptionTextPane.setToolTipText("Enter a description for your note by selecting a current note and clicking \"Edit\" or by creating a \"New Note\"");
 		noteDescriptionTextPane.setEditable(false);
 		noteDescriptionTextPane.setBounds(10, 16, 273, 169);
 		descriptionBorderPanel.add(noteDescriptionTextPane);
 		noteDescriptionTextPane.setBackground(SystemColor.controlHighlight);
-		
 		
 		noteTagScrollPane = new JScrollPane();
 		noteTagScrollPane.setBounds(293, 16, 96, 169);
@@ -481,7 +491,6 @@ public class NoteSystemMainWindow extends JFrame {
 		currentTagJList.setBackground(SystemColor.controlHighlight);
 		currentTagJList.setModel(currentTagModelList);
 		noteTagScrollPane.setRowHeaderView(currentTagJList);
-	
 		
 		tagPanel = new JPanel();
 		tagPanel.setBorder(new TitledBorder(null, "Add Tag", TitledBorder.LEADING, TitledBorder.TOP, null, null));
