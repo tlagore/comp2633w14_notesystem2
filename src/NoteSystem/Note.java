@@ -6,7 +6,6 @@ package NoteSystem;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Locale;
 
 /**
@@ -23,7 +22,6 @@ public class Note extends SortableNoteTag
 	private Calendar m_cDate;
 	
 	// Constants
-	private static final int PRIME = 11;
 	private static final int COL_WIDTH = 16;
 	
 	/**
@@ -133,7 +131,8 @@ public class Note extends SortableNoteTag
 	public int compareTo( SortableNoteTag ntRHS )
     {
 		Note nRHS = (Note) ntRHS;
-	    return this.m_cDate.compareTo( nRHS.m_cDate );
+		int iReturnValue = this.m_cDate.compareTo( nRHS.m_cDate ); 
+	    return iReturnValue == 0 ? this.m_sTitle.compareToIgnoreCase( nRHS.m_sTitle ) : iReturnValue;
     }
 	
 	/**

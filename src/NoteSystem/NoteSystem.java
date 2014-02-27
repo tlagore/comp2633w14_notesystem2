@@ -60,6 +60,8 @@ public class NoteSystem
             while( input.hasNext( ) )
             	sInput += input.nextLine( ) + "\n";
             
+            input.close( );
+            
             m_NotesList = ( ArrayList< Note > ) xstream.fromXML( sInput );
             
             populateTagsList( );   
@@ -112,7 +114,6 @@ public class NoteSystem
 	{
 		ArrayList< Tag > m_ReferencedTags 	= getLinkedTags( nNoteToUpdate );
 		ArrayList< String > m_NoteTags		= new ArrayList< String >( );
-		Tag m_ReferenceTag = null;
 		
 		m_NoteTags.addAll( nNoteToUpdate.getTags( ) );
 		
