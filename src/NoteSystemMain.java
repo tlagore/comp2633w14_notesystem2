@@ -1,11 +1,10 @@
 import NoteSystem.*;
 
 /**
+ * SmartWater Notes is a compact, interactive note keeping system allowing for the 
+ * addition of tags to better sort the notes.
  * 
- */
-
-/**
- * Description
+ * Each note contains a title, date created, list of tags, and a description.
  *
  * @author Tyrone Lagore
  * @author	James C. Coté

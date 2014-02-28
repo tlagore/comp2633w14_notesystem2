@@ -217,11 +217,10 @@ public class NoteSystemMainWindow extends JFrame {
 				{
 					currentNote = noteListModel.getElementAt(0);
 					editable(false);	
+					updateFields(false);
 				}
 
 				noteJList.setSelectedIndex(0);
-
-				updateFields();
 				tagListModel.fireChange();
 			}
 		}
@@ -238,7 +237,8 @@ public class NoteSystemMainWindow extends JFrame {
 			
 			if( !selectedTags.isEmpty( ) )
 				noteListModel.sortByTag( selectedTags.get( 0 ).getTag( ), true );
-			updateFields();
+			
+			updateFields(true);
 			btnDiscard.setVisible(true);
 			editable(true);
 		}
@@ -382,7 +382,7 @@ public class NoteSystemMainWindow extends JFrame {
 		editable(false);
 
 		currentNote = noteListModel.getElementAt(noteJList.getSelectedIndex());
-		updateFields();
+		updateFields(false);
 	}
 	
 	/**
@@ -427,14 +427,15 @@ public class NoteSystemMainWindow extends JFrame {
 	 * Purpose: updateFields updates the visual presentation of the Title, Date, Description
 	 * 			and Tags of the current note being viewed.
 	 */
-	private void updateFields()
+	private void updateFields(boolean isNewNote)
 	{
 		noteTitleTextField.setText(currentNote.getTitle());
-		
 		oldTitle = currentNote.getTitle();
-		
 		noteDateTextPane.setText(currentNote.getDate());
 		noteDescriptionTextPane.setText(currentNote.getDesc());
+		
+		if (isNewNote)
+			noteDescriptionTextPane.setText("<Enter description>");
 		
 		loadCurrentTags();
 	}
@@ -474,10 +475,13 @@ public class NoteSystemMainWindow extends JFrame {
 		noteListModel.updateNote(currentNote, noteTitleTextField.getText(), oldTitle);
 		if( tagJList.getSelectedIndex( ) != -1 )
 			noteListModel.sortByTag( tagJList.getSelectedValue( ).getTag( ), false );
+		else
+			tagListModel.fireChange();
+		
+		
 		
 		// Update List viewing
 		changeNote();
-		//tagListModel.fireChange();
 	}
 	
 	/**
@@ -704,7 +708,7 @@ public class NoteSystemMainWindow extends JFrame {
 		btnRemoveTag = new JButton("Remove Tag");
 		btnRemoveTag.setFont(new Font("Dotum", Font.PLAIN, 11));
 		btnRemoveTag.addActionListener(handler);
-		btnRemoveTag.setBounds(311, 145, 101, 23);
+		btnRemoveTag.setBounds(307, 145, 116, 23);
 		noteViewPanel.add(btnRemoveTag);
 		btnRemoveTag.setEnabled(false);
 		
@@ -726,6 +730,7 @@ public class NoteSystemMainWindow extends JFrame {
 		noteJList.setBackground(SystemColor.control);
 		
 		tagScrollPane = new JScrollPane();
+		tagScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		tagScrollPane.setBounds(699, 86, 99, 304);
 		contentPane.add(tagScrollPane);
 		
@@ -755,7 +760,7 @@ public class NoteSystemMainWindow extends JFrame {
 		contentPane.add(btnDiscard);
 		btnDiscard.setVisible(false);
 		
-		updateFields();
+		updateFields(false);
 		loadCurrentTags();
 		
 		noteJList.setSelectedIndex(0);

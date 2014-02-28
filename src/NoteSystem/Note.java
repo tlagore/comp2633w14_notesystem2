@@ -22,7 +22,7 @@ public class Note extends SortableNoteTag
 	private Calendar m_cDate;
 	
 	// Constants
-	private static final int COL_WIDTH = 16;
+	private static final int COL_WIDTH = 15;
 	
 	/**
 	 * Default Constructor to generate a new Note.
