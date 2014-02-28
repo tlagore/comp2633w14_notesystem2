@@ -182,61 +182,81 @@ public class NoteSystemMainWindow extends JFrame {
 			else if (e.getSource().equals(btnClose))
 				closeSelected();
 			
+			/*
+			 * btnDiscard is only enabled on new notes.  This gives the user the option to cancel their 
+			 * request to make a new note.  ONLY available on new notes that have not been saved. If a 
+			 * user desires to remove a note that has been added to the system, they must select remove
+			 * note.
+			 */
 			else if (e.getSource().equals(btnDiscard))
 			{
 				removeNote();
 				changeNote();
 				editable(false);
-				sortBothByTag();
+				tagJList.clearSelection();
 			}
 				
 		}
 		
 		/**
-		 * Removes the selected notes from the list
+		 * Name: removeNote
+		 * Purpose: Removes the selected notes from the list.
 		 */
 		private void removeNote()
 		{
 			List<Note> selected = noteJList.getSelectedValuesList();
 			
-			for (Note note : selected)
-				noteListModel.removeNote(note);		
-			
-			if (noteListModel.getSize() == 0)
-				newNote();
-			else
+			if (getYesNo(parent, "Are you sure you want to remove selected notes?", "Remove selected?") == 0)
 			{
-				currentNote = noteListModel.getElementAt(0);
-				editable(false);	
+				for (Note note : selected)
+					noteListModel.removeNote(note);		
+
+				if (noteListModel.getSize() == 0)
+					newNote();
+				else
+				{
+					currentNote = noteListModel.getElementAt(0);
+					editable(false);	
+				}
+
+				noteJList.setSelectedIndex(0);
+
+				updateFields();
+				tagListModel.fireChange();
 			}
-			
-			noteJList.setSelectedIndex(0);
-			
-			updateFields();
-			tagListModel.fireChange();
 		}
 		
+		/**
+		 * Name: newNote
+		 * Purpose: Creates a new note that includes the tag that is currently selected.
+		 */
 		private void newNote()
 		{
 			List<Tag> selectedTags = tagJList.getSelectedValuesList();
 			
 			currentNote = noteListModel.loadNewNote(selectedTags);
 			
-			/*tagTextField.setText( "" );
-			sortBothByTag();*/
 			if( !selectedTags.isEmpty( ) )
 				noteListModel.sortByTag( selectedTags.get( 0 ).getTag( ), true );
 			updateFields();
-			btnDiscard.setEnabled(true);
+			btnDiscard.setVisible(true);
 			editable(true);
 		}
 		
+		/**
+		 * Name: addTag
+		 * Purpose: Adds the tag currently entered into the tag field on the selected note.
+		 */
 		private void addTag()
 		{
 			currentTagModelList.addElement(noteTagTextField.getText().toLowerCase());
 			noteTagTextField.setText("");
 		}
 		
+		/**
+		 * Name: removeTags
+		 * Purpose: Removes any selected tags from the note
+		 */
 		private void removeTags()
 		{
 			List<String> selectedTags = currentTagJList.getSelectedValuesList();
@@ -245,6 +265,10 @@ public class NoteSystemMainWindow extends JFrame {
 				currentTagModelList.removeElement(t);
 		}
 		
+		/**
+		 * Name: closeSelected
+		 * Purpose: Instantiates and runs the confirm close window
+		 */
 		private void closeSelected()
 		{
 			ConfirmCloseWindow cWindow = new ConfirmCloseWindow();
@@ -276,6 +300,11 @@ public class NoteSystemMainWindow extends JFrame {
 		});
 	}
 	
+	/**
+	 * Name: sortBothByTag
+	 * Purpose: Sorts both the tag list and note list by tag.  If no tag is selected in the tag list,
+	 * 			the list will be sorted by current text in the search by text field.  (Can be empty.)
+	 */
 	public void sortBothByTag()
 	{
 		String tag = tagTextField.getText();
@@ -299,6 +328,11 @@ public class NoteSystemMainWindow extends JFrame {
 		}
 	}
 	
+	/**
+	 * Name: clearTagField
+	 * Purpose: Clears any tag information entered and de-selects the current tag.  Sets the current note to the first note
+	 * 			in the note list.
+	 */
 	public void clearTagField()
 	{
 		tagListModel.clearTagField();
@@ -311,6 +345,12 @@ public class NoteSystemMainWindow extends JFrame {
 		changeNote();
 	}
 	
+	/**
+	 * Name: tagChanged
+	 * Purpose: A new tag has been selected, the note list is sorted by this tag, and the tag becomes the only
+	 * 			tag viewable in the tag list (until a reset is issued)
+	 * @param bExact true = exact tag matches only, false = begins with tag matches
+	 */
 	public void tagChanged( boolean bExact )
 	{
 		noteListModel.sortByTag(tagJList.getSelectedValue().getTag(), bExact);
@@ -320,6 +360,11 @@ public class NoteSystemMainWindow extends JFrame {
 		changeNote();
 	}
 	
+	/**
+	 * Name: checkIfChanged
+	 * Purpose: Checks to see if any of the fields were altered while the note was in edit mode.
+	 * @return boolean true = the note was altered in some way, false = the note was not altered.
+	 */
 	public boolean checkIfChanged()
 	{	
 		return (!currentNote.getTitle().equals(noteTitleTextField.getText()) ||
@@ -327,6 +372,11 @@ public class NoteSystemMainWindow extends JFrame {
 				!currentNote.getTags().containsAll(Arrays.asList(currentTagModelList.toArray())));
 	}
 
+	/**
+	 * Name: changeNote
+	 * Purpose: A new note has been selected.  The fields are updated to display the contents of the newly selected
+	 * 			note and are set to be non-editable.
+	 */
 	public void changeNote()
 	{
 		editable(false);
@@ -343,7 +393,6 @@ public class NoteSystemMainWindow extends JFrame {
 	 * @param enable true = set editable to true, false = set editable to false
 	 * 
 	 */
-	
 	private void editable(boolean enable)
 	{
 		if (noteJList.getSelectedValuesList().size() > 1)
@@ -369,7 +418,7 @@ public class NoteSystemMainWindow extends JFrame {
 			noteTitleTextField.grabFocus();
 			noteTitleTextField.selectAll();
 		}else
-			btnDiscard.setEnabled(false);
+			btnDiscard.setVisible(false);
 		
 	}
 	
@@ -467,6 +516,14 @@ public class NoteSystemMainWindow extends JFrame {
 		dispose();
 	}
 	
+	/**
+	 * Name: getYesNo
+	 * Purpose: Creates a simple yes or no frame for confirmation based events.
+	 * @param parent The calling object
+	 * @param prompt The prompt that will be displayed in the window
+	 * @param title The title that will be displayed in the header of the window
+	 * @return int 0 returned means yes was selected, 1 returned means no was selected
+	 */
 	private int getYesNo(Component parent, String prompt, String title)
 	{
 		Object[] options = {"Yes", "No"};
@@ -690,11 +747,14 @@ public class NoteSystemMainWindow extends JFrame {
 		contentPane.add(btnClear);
 		
 		btnDiscard = new JButton("Discard");
+		btnDiscard.setToolTipText("Only available for newly created notes that have not been saved.");
 		btnDiscard.addActionListener(handler);
 		btnDiscard.setFont(new Font("Dotum", Font.PLAIN, 11));
-		btnDiscard.setEnabled(false);
+		btnDiscard.setEnabled(true);
 		btnDiscard.setBounds(364, 450, 89, 23);
 		contentPane.add(btnDiscard);
+		btnDiscard.setVisible(false);
+		
 		updateFields();
 		loadCurrentTags();
 		
